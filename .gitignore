@@ -1,0 +1,40 @@
+# Keil build output and per-user settings
+**/Objects/
+**/Listings/
+**/Build_*/
+**/*.uvguix.*
+**/*.uvoptx
+**/*.dep
+**/*.d
+**/*.o
+**/*.crf
+**/*.axf
+**/*.hex
+**/*.bin
+**/*.map
+**/*.lnp
+**/*.lst
+**/*.htm
+**/JLinkLog.txt
+**/JLinkSettings.ini
+
+# CubeMX backups and local tools
+**/*.bak
+**/*.launch
+**/.settings/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Local reference copies and large recordings
+/third_party_local/
+/local/
+*.zip
+*.rar
+*.7z
+*.mp4
+*.mov
+*.avi
+*.mkv
