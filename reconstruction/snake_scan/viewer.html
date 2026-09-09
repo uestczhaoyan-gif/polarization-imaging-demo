@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>蛇形扫描 · 像素与原始电流</title>
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f6f7f9,#131820);--panel:light-dark(#fff,#1d2530);--fg:light-dark(#1d2938,#e5eaf1);--muted:light-dark(#526176,#b2c0d0);--border:light-dark(#d7dfe8,#445164);--trace:light-dark(#173d65,#89bcf0);--low:#173d65;--high:#f0ba57;--select:light-dark(#b7353f,#ff8390)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,"Microsoft YaHei",sans-serif}main{max-width:1320px;margin:auto;padding:24px}h1{font-size:25px;margin:0}h2{font-size:16px;font-weight:600;margin:0 0 10px}p{margin:8px 0;color:var(--muted)}.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0}label{display:flex;gap:6px;align-items:center;flex-wrap:wrap}input,select,button{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--border);border-radius:5px;padding:5px 8px}input[type=number]{width:96px}button{cursor:pointer}button:disabled{opacity:.5;cursor:default}.grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(370px,1.45fr);gap:18px}.panel{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:16px;min-width:0}.stack{display:grid;gap:18px}canvas{display:block;width:100%;height:220px;touch-action:manipulation}#map{height:350px;cursor:crosshair}#overview,#rowplot,#pixelplot{cursor:crosshair}.wide{margin-top:18px}.legend{display:flex;gap:16px;flex-wrap:wrap}.swatch{display:inline-block;width:13px;height:13px;margin-right:5px}.low{background:var(--low)}.high{background:var(--high)}#selection{font-variant-numeric:tabular-nums;color:var(--fg);min-height:64px}.hint{font-size:13px}.notice{border-left:3px solid var(--select);padding-left:10px}a{color:var(--trace)}@media(max-width:760px){main{padding:12px}.grid{grid-template-columns:1fr}h1{font-size:21px}.panel{padding:10px}#map{height:300px}.toolbar{gap:8px}}
+</style></head>
+<body><main>
+<h1>蛇形扫描 · 像素与原始电流</h1>
+<p id="subtitle"></p>
+<p>点击左图像素，查看右侧对应的扫描行和原始点；点击任意曲线可反查像素。点号从 0 开始。</p>
+<div class="toolbar">
+<label>扫描行 <input id="row" type="number" min="0" step="1" value="0"></label>
+<label>像素列 <input id="col" type="number" min="0" step="1" value="0"></label>
+<label>阈值 / μA <input id="threshold" type="number" step="any"></label>
+<label>图像 <select id="mode"><option value="binary">高低电平</option><option value="mixed">高电流采样占比</option></select></label>
+<label>曲线横轴 <select id="axis"><option value="point">point</option><option value="time">时间 / s</option></select></label>
+<button id="reset" type="button">恢复原始阈值</button>
+<button id="download" type="button">导出选中像素 CSV</button>
+</div>
+<div class="grid"><section class="panel">
+<h2>二维图 · 每个格子对应一段连续采样</h2>
+<canvas id="map" role="img" aria-label="二维像素图，点击选择；也可使用上方行列输入框"></canvas>
+<div class="legend"><span><i class="swatch low"></i>低电流</span><span><i class="swatch high"></i>高电流</span><span>红框：选中像素</span></div>
+<p id="selection" aria-live="polite"></p><p id="status" class="notice" aria-live="polite"></p>
+<p class="hint">占比接近 0.5 表示同一像素内混有高低采样，可能是边缘或波动；它不是“错误概率”。调阈值仅作浏览器内比较，不覆盖 Python 导出的结果。</p>
+</section><div class="stack">
+<section class="panel"><h2 id="rowtitle">对应扫描行</h2><canvas id="rowplot" role="img" aria-label="选中行原始电流，黄色区域对应选中像素"></canvas></section>
+<section class="panel"><h2 id="pixeltitle">对应像素的全部原始点</h2><canvas id="pixelplot" role="img" aria-label="像素内全部采样，横虚线为分类阈值"></canvas></section>
+</div></div>
+<section class="panel wide"><h2>完整原始记录 · 黄色为选中扫描行，红色为选中像素</h2><canvas id="overview" role="img" aria-label="全记录电流总览，可点击反查原始点对应像素"></canvas>
+<p class="hint">全量数据内嵌保存；总览和密集行波形按屏幕横坐标绘制最小—最大包络，保留尖峰。像素局部图显示全部采样。未用于重构的点不会被强行映射。</p></section>
+<p id="notes" class="hint"></p>
+</main><script id="scan-data" type="application/json">__SCAN_DATA__</script>
+<script>
+(()=>{'use strict';
+const d=JSON.parse(document.getElementById('scan-data').textContent), el=id=>document.getElementById(id);
+const rows=d.limits.length,cols=d.limits[0].length,n=d.raw.length;
+let row=Math.floor(rows/2),col=Math.floor(cols/2),threshold=d.meta.threshold_A*1e6,mapBox=null;
+const bounds=new Map(), intervals=[];
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const[a,b]=d.limits[r][c];intervals.push({a,b,r,c});}
+intervals.sort((a,b)=>a.a-b.a);
+let minimum=Infinity,maximum=-Infinity;for(const v of d.raw){minimum=Math.min(minimum,v);maximum=Math.max(maximum,v);}
+const padding=Math.max((maximum-minimum)*.1,.001),ymin=minimum-padding,ymax=maximum+padding;
+el('row').max=rows-1;el('col').max=cols-1;el('threshold').value=threshold;
+el('axis').options[1].disabled=!d.times;
+el('subtitle').textContent=`${d.meta.config.title||'连续电流重构'} · ${rows} × ${cols} 像素 · ${n.toLocaleString()} 个原始点 · 模式 ${d.meta.mode}`;
+el('notes').textContent=d.meta.notes.join(' ');
+function color(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+// Canvas 通过隐藏元素解析 light-dark()，保证浅色和深色模式均可读。
+const probe=document.createElement('span');probe.hidden=true;document.body.appendChild(probe);
+function resolved(name){probe.style.color=`var(${name})`;return getComputedStyle(probe).color;}
+function setup(id){const canvas=el(id),rect=canvas.getBoundingClientRect(),ratio=window.devicePixelRatio||1;canvas.width=Math.round(rect.width*ratio);canvas.height=Math.round(rect.height*ratio);const ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);ctx.font='12px system-ui';return{ctx,w:rect.width,h:rect.height};}
+function findPixel(i){let lo=0,hi=intervals.length;while(lo<hi){const mid=(lo+hi)>>1;if(intervals[mid].a<=i)lo=mid+1;else hi=mid;}const p=intervals[lo-1];return p&&i<p.b?p:null;}
+function choose(r,c){row=Math.max(0,Math.min(rows-1,r));col=Math.max(0,Math.min(cols-1,c));el('row').value=row;el('col').value=col;el('status').textContent='';draw();}
+function xvalue(i){return el('axis').value==='time'?d.times[i]:i;}
+function nearest(x){if(el('axis').value==='point')return Math.max(0,Math.min(n-1,Math.round(x)));let lo=0,hi=n-1;while(lo<hi){const mid=(lo+hi)>>1;if(d.times[mid]<x)lo=mid+1;else hi=mid;}return lo>0&&Math.abs(d.times[lo-1]-x)<Math.abs(d.times[lo]-x)?lo-1:lo;}
+function drawMap(){const{ctx,w,h}=setup('map');const left=48,top=12,spaceW=w-left-10,spaceH=h-top-40;
+const cell=Math.min(spaceW/cols,spaceH/rows),mw=cols*cell,mh=rows*cell;
+mapBox={left,top,cell,mw,mh};
+for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+const[a,b]=d.limits[r][c];let count=0;for(let i=a;i<b;i++)if(d.raw[i]>=threshold)count++;
+const f=count/(b-a);ctx.fillStyle=el('mode').value==='binary'?(d.median[r][c]>=threshold?color('--high'):color('--low')):`rgb(${Math.round(23+217*f)},${Math.round(61+125*f)},${Math.round(101-14*f)})`;
+ctx.fillRect(left+c*cell,top+r*cell,cell+.2,cell+.2);}
+ctx.strokeStyle=resolved('--select');ctx.lineWidth=2;ctx.strokeRect(left+col*cell+1,top+row*cell+1,Math.max(1,cell-2),Math.max(1,cell-2));
+ctx.fillStyle=resolved('--fg');ctx.textAlign='center';ctx.fillText(`像素列 0 → ${cols-1}`,left+mw/2,top+mh+25);
+ctx.save();ctx.translate(15,top+mh/2);ctx.rotate(-Math.PI/2);ctx.fillText(`扫描行 0 → ${rows-1}`,0,0);ctx.restore();}
+function plot(id,start,stop,highlight,overview=false){const{ctx,w,h}=setup(id),left=58,right=w-16,top=15,bottom=h-42;
+let xa=xvalue(start),xb=xvalue(stop-1);if(xa===xb){xa-=.5;xb+=.5;}
+const px=x=>left+(x-xa)/(xb-xa)*(right-left),py=y=>bottom-(y-ymin)/(ymax-ymin)*(bottom-top);
+bounds.set(id,{left,right,top,bottom,xa,xb,start,stop});
+ctx.strokeStyle=resolved('--border');ctx.lineWidth=1;ctx.strokeRect(left,top,right-left,bottom-top);
+ctx.fillStyle=resolved('--fg');ctx.textAlign='right';for(let j=0;j<4;j++){const y=ymin+(ymax-ymin)*j/3;ctx.fillText(y.toFixed(1),left-6,py(y)+4);}
+for(let j=0;j<4;j++){ctx.textAlign=j===0?'left':j===3?'right':'center';const x=xa+(xb-xa)*j/3;ctx.fillText(el('axis').value==='time'?x.toFixed(2):Math.round(x),px(x),bottom+18);}ctx.textAlign='center';
+ctx.fillText(el('axis').value==='time'?'时间 / s':'point（采集顺序）',left+(right-left)/2,h-4);
+ctx.save();ctx.translate(12,top+(bottom-top)/2);ctx.rotate(-Math.PI/2);ctx.fillText('电流 / μA',0,0);ctx.restore();
+ctx.save();ctx.beginPath();ctx.rect(left,top,right-left,bottom-top);ctx.clip();
+if(highlight){const[a,b]=highlight;ctx.fillStyle='#f0ba5760';ctx.fillRect(px(xvalue(a)),top,Math.max(2,px(xvalue(b-1))-px(xvalue(a))),bottom-top);}
+if(overview){const[a,b]=d.limits[row][col];ctx.fillStyle=resolved('--select');ctx.globalAlpha=.55;ctx.fillRect(px(xvalue(a)),top,Math.max(2,px(xvalue(b-1))-px(xvalue(a))),bottom-top);ctx.globalAlpha=1;}
+ctx.strokeStyle=resolved('--trace');ctx.lineWidth=1;ctx.beginPath();
+if(stop-start>2*(right-left)){
+let bucket=-1,low=Infinity,high=-Infinity,previous=null;
+const flush=()=>{if(bucket>=0){const x=left+bucket,y=py((low+high)/2);if(previous){ctx.moveTo(previous[0],previous[1]);ctx.lineTo(x,y);}ctx.moveTo(x,py(low));ctx.lineTo(x,py(high));previous=[x,y];}};
+for(let i=start;i<stop;i++){const b=Math.floor(px(xvalue(i))-left);if(b!==bucket){flush();bucket=b;low=high=d.raw[i];}else{low=Math.min(low,d.raw[i]);high=Math.max(high,d.raw[i]);}}flush();
+}else{for(let i=start;i<stop;i++){const x=px(xvalue(i)),y=py(d.raw[i]);if(i===start)ctx.moveTo(x,y);else ctx.lineTo(x,y);}}
+ctx.stroke();if(id==='pixelplot'){ctx.fillStyle=resolved('--trace');for(let i=start;i<stop;i++){ctx.beginPath();ctx.arc(px(xvalue(i)),py(d.raw[i]),2.2,0,2*Math.PI);ctx.fill();}}
+ctx.strokeStyle=resolved('--select');ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(left,py(threshold));ctx.lineTo(right,py(threshold));ctx.stroke();ctx.restore();}
+function draw(){drawMap();const[a,b]=d.limits[row][col];const ra=Math.min(...d.limits[row].map(x=>x[0])),rb=Math.max(...d.limits[row].map(x=>x[1]));
+plot('overview',0,n,[ra,rb],true);plot('rowplot',ra,rb,[a,b]);plot('pixelplot',a,b,null);
+let count=0;for(let i=a;i<b;i++)if(d.raw[i]>=threshold)count++;
+const mixed=count/(b-a);el('rowtitle').textContent=`扫描行 ${row} · ${d.meta.directions[row]==='reverse'?'反向 ←':'正向 →'} · point ${ra}–${rb-1}`;
+el('pixeltitle').textContent=`像素 (${row}, ${col}) · point ${a}–${b-1} · 全部 ${b-a} 点`;
+el('selection').textContent=`行 ${row}，列 ${col}｜中位数 ${d.median[row][col].toFixed(3)} μA｜标准差 ${d.std[row][col].toFixed(3)} μA｜高采样占比 ${(mixed*100).toFixed(1)}%｜${d.median[row][col]>=threshold?'高电平':'低电平'}。名义 x=${((col+.5)*d.meta.config.width_mm/cols).toFixed(2)} mm，扫描线 y=${(row*d.meta.config.line_step_mm).toFixed(2)} mm。`;
+}
+el('map').addEventListener('click',e=>{const r=el('map').getBoundingClientRect(),x=e.clientX-r.left-mapBox.left,y=e.clientY-r.top-mapBox.top;if(x>=0&&y>=0&&x<mapBox.mw&&y<mapBox.mh)choose(Math.floor(y/mapBox.cell),Math.floor(x/mapBox.cell));});
+for(const id of ['overview','rowplot','pixelplot'])el(id).addEventListener('click',e=>{const r=el(id).getBoundingClientRect(),b=bounds.get(id),x=e.clientX-r.left,y=e.clientY-r.top;if(x<b.left||x>b.right||y<b.top||y>b.bottom)return;const i=Math.max(b.start,Math.min(b.stop-1,nearest(b.xa+(x-b.left)/(b.right-b.left)*(b.xb-b.xa))));const p=findPixel(i);if(p){choose(p.r,p.c);el('status').textContent=`反查 point ${i} → 像素 (${p.r}, ${p.c})`;}else{el('status').textContent=`point ${i} 未用于二维图：可能属于启动、转向或首尾不完整行。当前像素选择保留。`;}});
+for(const id of ['row','col'])el(id).addEventListener('change',()=>{const r=Number(el('row').value),c=Number(el('col').value);if(Number.isInteger(r)&&Number.isInteger(c))choose(r,c);});
+el('threshold').addEventListener('change',()=>{const v=Number(el('threshold').value);if(el('threshold').value!==''&&Number.isFinite(v)){threshold=v;draw();}});
+for(const id of ['mode','axis'])el(id).addEventListener('change',draw);
+el('reset').addEventListener('click',()=>{threshold=d.meta.threshold_A*1e6;el('threshold').value=threshold;draw();});
+el('download').addEventListener('click',()=>{const[a,b]=d.limits[row][col],out=['source_index,current_A,time_s,row,col'];for(let i=a;i<b;i++)out.push([i,d.raw[i]/1e6,d.times?d.times[i]:'',row,col].join(','));const url=URL.createObjectURL(new Blob(['\ufeff'+out.join('\r\n')],{type:'text/csv;charset=utf-8'}));const link=document.createElement('a');link.href=url;link.download=`pixel_r${row}_c${col}.csv`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+new ResizeObserver(()=>draw()).observe(el('map').parentElement);window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);choose(row,col);
+})();
+</script></body></html>

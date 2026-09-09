@@ -1,0 +1,30 @@
+[
+  {
+    "variant": "baseline",
+    "changed_pixels_percent": 0.0
+  },
+  {
+    "variant": "threshold_8_uA",
+    "changed_pixels_percent": 0.8275862068965517
+  },
+  {
+    "variant": "threshold_16_uA",
+    "changed_pixels_percent": 0.6206896551724138
+  },
+  {
+    "variant": "no_turnaround_exclusion",
+    "changed_pixels_percent": 2.5517241379310347
+  },
+  {
+    "variant": "turnaround_5_percent",
+    "changed_pixels_percent": 1.6551724137931034
+  },
+  {
+    "variant": "row_period_minus_8",
+    "changed_pixels_percent": 8.413793103448276
+  },
+  {
+    "variant": "row_period_plus_8",
+    "changed_pixels_percent": 8.413793103448276
+  }
+]

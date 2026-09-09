@@ -1,0 +1,222 @@
+{
+  "encoding": "gb18030",
+  "point_base": 8,
+  "sha256": "9c72470a2cb5f710918991972a4550bba204f23ee5b4f306a60ed0094f48b9c3",
+  "input_points": 120311,
+  "source_index_definition": "zero-based numerical record index; stop exclusive",
+  "time_source": "unavailable",
+  "mode": "estimate",
+  "round_trip_peak_samples": 8016,
+  "adjacent_row_disagreement": 0.09603297070751286,
+  "fit_point_range": [
+    8000,
+    115000
+  ],
+  "timing_method": "constant-period adjacent-row consistency; estimated, not synchronized",
+  "samples_per_row": 4015.033236895656,
+  "start_point_estimate": 1792.087135697972,
+  "window_domain": "source_index",
+  "windows": [
+    [
+      1854.3201508698546,
+      5744.887357421745
+    ],
+    [
+      5869.353387765511,
+      9759.920594317402
+    ],
+    [
+      9884.386624661167,
+      13774.953831213057
+    ],
+    [
+      13899.419861556824,
+      17789.987068108712
+    ],
+    [
+      17914.45309845248,
+      21805.02030500437
+    ],
+    [
+      21929.486335348134,
+      25820.053541900026
+    ],
+    [
+      25944.519572243793,
+      29835.086778795685
+    ],
+    [
+      29959.552809139448,
+      33850.12001569134
+    ],
+    [
+      33974.5860460351,
+      37865.15325258699
+    ],
+    [
+      37989.61928293076,
+      41880.18648948265
+    ],
+    [
+      42004.65251982641,
+      45895.2197263783
+    ],
+    [
+      46019.68575672207,
+      49910.25296327396
+    ],
+    [
+      50034.71899361773,
+      53925.28620016962
+    ],
+    [
+      54049.75223051338,
+      57940.31943706527
+    ],
+    [
+      58064.78546740904,
+      61955.35267396093
+    ],
+    [
+      62079.81870430469,
+      65970.38591085658
+    ],
+    [
+      66094.85194120035,
+      69985.41914775225
+    ],
+    [
+      70109.88517809601,
+      74000.45238464791
+    ],
+    [
+      74124.91841499167,
+      78015.48562154357
+    ],
+    [
+      78139.95165188731,
+      82030.5188584392
+    ],
+    [
+      82154.98488878297,
+      86045.55209533486
+    ],
+    [
+      86170.01812567863,
+      90060.58533223052
+    ],
+    [
+      90185.05136257429,
+      94075.61856912618
+    ],
+    [
+      94200.08459946995,
+      98090.65180602184
+    ],
+    [
+      98215.1178363656,
+      102105.6850429175
+    ],
+    [
+      102230.15107326125,
+      106120.71827981315
+    ],
+    [
+      106245.18431015691,
+      110135.75151670881
+    ],
+    [
+      110260.21754705257,
+      114150.78475360447
+    ],
+    [
+      114275.25078394823,
+      118165.81799050013
+    ]
+  ],
+  "directions": [
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward"
+  ],
+  "config": {
+    "input_file": "data/raw_data.txt",
+    "output_dir": "../../outputs/z_tape",
+    "point_base": "auto",
+    "width_mm": 100.0,
+    "line_step_mm": 2.0,
+    "reported_speed_mm_s": 2.0,
+    "reported_start_wait_seconds": 10.0,
+    "columns": 50,
+    "threshold_uA": 12.0,
+    "row_period_search": [
+      3800,
+      4200
+    ],
+    "fit_point_range": [
+      8000,
+      115000
+    ],
+    "alignment_median_window": 31,
+    "samples_per_row": null,
+    "start_point": null,
+    "turnaround_fraction": 0.031,
+    "first_row_reverse": false,
+    "roi_x_mm": [
+      20.0,
+      86.0
+    ],
+    "mode": "estimate",
+    "input_format": "legacy",
+    "minimum_samples_per_pixel": 1,
+    "title": "玻璃胶带 Z：缺少同步记录的估计重构"
+  },
+  "version": "1.1.0",
+  "python": "3.14.6",
+  "numpy": "2.4.6",
+  "scipy": "1.18.0",
+  "threshold_A": 1.2e-05,
+  "complete_rows": 29,
+  "columns": 50,
+  "points_used": 112827,
+  "points_excluded": 7484,
+  "points_per_pixel_min": 77,
+  "points_per_pixel_max": 78,
+  "mixed_pixels_fraction_02_to_08": 46,
+  "first_used_source_index": 1855,
+  "reported_start_wait_seconds_approx": 10.0,
+  "time_axis_available": false,
+  "notes": [
+    "坐标为给定宽度和行距下的相对坐标，未校准绝对位置或光斑尺寸。",
+    "每行按均匀空间分箱，要求有效横扫窗口内速度恒定；尚不支持编码器轨迹重采样。",
+    "周期/起点来自信号拟合，存在多解；估计图案不能替代同步测量。",
+    "按点数等分像素，要求有效窗口内采样间隔均匀；有非均匀时间戳请用 time_windows。",
+    "无时间轴：积分时间和约数启动等待不会被换算成采样间隔。"
+  ]
+}

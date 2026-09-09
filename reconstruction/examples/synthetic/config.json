@@ -1,0 +1,14 @@
+{
+  "input_file": "data.csv",
+  "input_format": "csv",
+  "mode": "time_windows",
+  "row_windows_csv": "rows.csv",
+  "width_mm": 6,
+  "line_step_mm": 2,
+  "columns": 3,
+  "threshold_uA": 12,
+  "minimum_samples_per_pixel": 10,
+  "max_sample_gap_seconds": 0.05,
+  "output_dir": "../../outputs/synthetic",
+  "title": "合成验证：非均匀时间戳与行方向"
+}
