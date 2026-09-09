@@ -11,7 +11,7 @@ from pathlib import Path
 from snake_scan.pipeline import reconstruct
 from snake_scan.report import write_outputs
 
-data = reconstruct(Path('examples/synthetic/config.json'))
+data = reconstruct(Path('examples/z_tape/config.json'))
 print(data['binary'].shape)
 write_outputs(data, Path('outputs/my_run'))
 ```
@@ -36,14 +36,14 @@ write_outputs(data, Path('outputs/my_run'))
 python -m unittest discover -s tests -v
 ```
 
-测试覆盖：正反向与反查、空像素/窗口重叠拒绝、非均匀时间戳按时间分箱、半开时间边界与等待剔除、长采样间断、显式方向、坏点号/时间戳/NaN、合成已知答案、短八进制记录与单行映射、HTML 数据转义。
+测试覆盖：正反向与反查、空像素/窗口重叠拒绝、非均匀时间戳按时间分箱、半开时间边界与等待剔除、长采样间断、显式方向、坏点号/时间戳/NaN、合成已知答案、实测八进制点号与全部像素映射、HTML 数据转义。
 
-已知答案与映射测试保证按给定参数处理一致，不能证明估计轨迹等于真实运动。发布前本机另用浏览器实际点击测试二维图→曲线、曲线→像素、未使用点提示、阈值/恢复、CSV 导出，以及 360/736/1280 像素宽度的布局。合成时间戳例子检查 I–t 切换。
+实测例子回归检查保证按给定参数处理一致，不能证明估计轨迹等于真实运动。发布前本机另用浏览器实际点击测试二维图→曲线、曲线→像素、未使用点提示、阈值/恢复、CSV 导出，以及 360/736/1280 像素宽度的布局。合成时间戳例子检查 I–t 切换。
 
 CI 在 Windows/Ubuntu 和 Python 3.10/3.12 上运行 Python 测试及合成例子。依赖下限写在 pyproject.toml，实际 Python/NumPy/SciPy 版本写入输出 metadata；更换库可能改变自动优化的微小数值，正式测量应保留已确认的行边界与结果。
 
 ## 文件管理
 
-`outputs/`、`local/`、缓存和构建目录被 Git 忽略。自带数据由脚本生成，仅用于软件验证。每次重要实验单独保存 config 和 outputs；命令行默认拒绝覆盖非空输出，例子快捷脚本明确使用 `--overwrite`。
+`outputs/`、`local/`、缓存和构建目录被 Git 忽略。自带实测数据仅作为可复现实例。每次重要实验单独保存 config 和 outputs；命令行默认拒绝覆盖非空输出，例子快捷脚本明确使用 `--overwrite`。
 
 MIT 许可覆盖代码与仓库内示例。不要把第三方仪器整本手册或不属于自己的数据直接复制到仓库；文档引用使用官方页面链接。

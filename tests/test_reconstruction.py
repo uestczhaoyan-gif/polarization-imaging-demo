@@ -78,6 +78,25 @@ class MappingTests(unittest.TestCase):
         np.testing.assert_array_equal(d['binary'],expected)
         self.assertEqual(d['metadata']['time_source'],'measured timestamps')
 
+    def test_octals_and_original_case(self):
+        d=reconstruct(ROOT/'examples/z_tape/config.json')
+        self.assertEqual(d['metadata']['sha256'],'9c72470a2cb5f710918991972a4550bba204f23ee5b4f306a60ed0094f48b9c3')
+        np.testing.assert_array_equal(d['file_point_decimal'],np.arange(120311))
+        self.assertEqual(d['metadata']['point_base'],8)
+        self.assertIsNone(d['time_s'])
+        # 用已保存的固定周期复现，不把拟合结果视为真实路径。
+        cfg=d['metadata']['config'].copy()
+        cfg.update(mode='constant',samples_per_row=d['metadata']['samples_per_row'],start_point=d['metadata']['start_point_estimate'])
+        edges,reverse,_=build_edges(d['raw_current_A'],None,cfg,ROOT,12e-6)
+        fixed=aggregate(d['raw_current_A'],edges,reverse,12e-6)
+        np.testing.assert_array_equal(d['binary'],fixed['binary'])
+        for r,c in np.ndindex(d['binary'].shape):
+            a,b=d['limits'][r,c]
+            self.assertEqual(d['median_A'][r,c],np.median(d['raw_current_A'][a:b]))
+            self.assertTrue(np.all(d['sample_row'][a:b]==r))
+            self.assertTrue(np.all(d['sample_col'][a:b]==c))
+        self.assertEqual(int(np.diff(d['limits'],axis=2).sum()),d['metadata']['points_used'])
+
     def test_html_payload_escaping(self):
         d=reconstruct(ROOT/'examples/synthetic/config.json')
         d['metadata']['config']['title']='</script><script>alert(1)</script>'

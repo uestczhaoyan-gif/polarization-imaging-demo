@@ -1,0 +1,63 @@
+{
+  "point_base": 10,
+  "encoding": "utf-8-sig",
+  "input_points": 257,
+  "sha256": "a2d218e65e49386000200328dfb301bfe0390c8d6a4bd168c8055039892372fa",
+  "time_source": "measured timestamps",
+  "source_index_definition": "zero-based numerical record index; stop exclusive",
+  "mode": "time_windows",
+  "window_domain": "time_s",
+  "windows": [
+    [
+      1.0,
+      4.0
+    ],
+    [
+      5.0,
+      8.0
+    ]
+  ],
+  "row_windows_sha256": "e80982c10062e0fda16471a5369c9a97ea4bef785b0c6122175bd7d67cde1e55",
+  "directions": [
+    "forward",
+    "reverse"
+  ],
+  "config": {
+    "input_file": "data.csv",
+    "input_format": "csv",
+    "mode": "time_windows",
+    "row_windows_csv": "rows.csv",
+    "width_mm": 6.0,
+    "line_step_mm": 2.0,
+    "columns": 3,
+    "threshold_uA": 12,
+    "minimum_samples_per_pixel": 10,
+    "max_sample_gap_seconds": 0.05,
+    "output_dir": "../../outputs/synthetic",
+    "title": "合成验证：非均匀时间戳与行方向"
+  },
+  "version": "1.1.0",
+  "python": "3.14.6",
+  "numpy": "2.4.6",
+  "scipy": "1.18.0",
+  "threshold_A": 1.2e-05,
+  "complete_rows": 2,
+  "columns": 3,
+  "points_used": 171,
+  "points_excluded": 86,
+  "points_per_pixel_min": 28,
+  "points_per_pixel_max": 29,
+  "mixed_pixels_fraction_02_to_08": 0,
+  "first_used_source_index": 29,
+  "reported_start_wait_seconds_approx": null,
+  "time_axis_available": true,
+  "notes": [
+    "坐标为给定宽度和行距下的相对坐标，未校准绝对位置或光斑尺寸。",
+    "每行按均匀空间分箱，要求有效横扫窗口内速度恒定；尚不支持编码器轨迹重采样。"
+  ],
+  "sample_interval_summary_seconds": {
+    "min": 0.025074684841041472,
+    "median": 0.03538613306373817,
+    "max": 0.04491000566868786
+  }
+}

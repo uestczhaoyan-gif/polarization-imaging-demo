@@ -1,6 +1,6 @@
 """将连续电流记录按蛇形扫描映射到二维像素，并保存逐点对应关系。
 
-运行：python reconstruct.py run --config examples/synthetic/config.json
+运行：python reconstruct.py run --config examples/z_tape/config.json
 
 没有时间戳或行同步信号时，自动分行只是估计；本程序不读取照片、不使用
 字母模板、不补画轮廓。坐标方向、行周期、起点及换行占时都可显式修改。

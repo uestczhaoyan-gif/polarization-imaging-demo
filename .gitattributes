@@ -6,4 +6,7 @@
 *.yml text eol=lf
 *.cmd text eol=crlf
 # Preserve measurement exports byte-for-byte, including original header whitespace.
+examples/z_tape/data/raw_data.txt -text whitespace=-blank-at-eol
 examples/synthetic/data.csv -text whitespace=cr-at-eol
+# Published result snapshots and checksums must survive checkout byte-for-byte.
+results/** -text whitespace=cr-at-eol

@@ -46,7 +46,7 @@ start_point,stop_point_exclusive,direction
 | `reported_speed_mm_s` | mm/s 或 `null` | 仅记录，不据此伪造采样率 |
 | `title` | 文本 | 查看器标题 |
 
-未知额外字段会保存在配置快照中，但不会自动影响算法；请按本表核对拼写。
+未知额外字段会保存在配置快照中，但不会自动影响算法；请按本表核对拼写。Z 配置中的 `roi_x_mm` 是原示例裁剪范围记录，新通用查看器显示完整图，不据此删除区域。
 
 已有 `time_s` 时不得再填写固定采样间隔。是否有时间轴与是否有真实同步是两回事：`metadata.time_source` 区分仪器时间戳和用户固定间隔假设。可在点数模式下展示 I–t，但点数分箱仍假设均匀采样；非均匀采样应改用 time_windows。
 
@@ -79,7 +79,7 @@ start_point,stop_point_exclusive,direction
 ```python
 import numpy as np
 d = np.load('outputs/run01/reconstruction.npz', allow_pickle=False)
-r, c = 0, 0
+r, c = 7, 41
 a, b = d['limits'][r, c]
 pixel_samples_A = d['raw_current_A'][a:b]
 print(a, b, len(pixel_samples_A), np.median(pixel_samples_A))
