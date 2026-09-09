@@ -1,0 +1,42 @@
+{
+  "experiment_id": "replace-with-your-id",
+  "started_at_iso8601": null,
+  "scan": {
+    "width_mm": 100,
+    "line_step_mm": 2,
+    "speed_mm_s": 2,
+    "acceleration_mm_s2": null,
+    "planned_rows": null,
+    "completed_rows": null,
+    "last_row_complete": null,
+    "first_direction": null,
+    "origin_mm": null,
+    "firmware_commit": null
+  },
+  "instrument": {
+    "model": null,
+    "measurement": "current_A",
+    "range_A": null,
+    "autorange": null,
+    "integration_value": null,
+    "integration_unit": null,
+    "autozero": null,
+    "filter": null,
+    "trigger_mode": null,
+    "timestamp_semantics": null
+  },
+  "synchronization": {
+    "clock_source": null,
+    "sync_event": null,
+    "motor_to_meter_offset_s": null,
+    "drift_correction": null
+  },
+  "optics": {
+    "spot_diameter_mm": null,
+    "light_source": null,
+    "ambient_lighting": null,
+    "sample_orientation": null,
+    "polarizer_deg": null,
+    "analyzer_deg": null
+  }
+}

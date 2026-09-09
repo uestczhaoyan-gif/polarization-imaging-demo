@@ -1,0 +1,9 @@
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.yml text eol=lf
+*.cmd text eol=crlf
+# Preserve measurement exports byte-for-byte, including original header whitespace.
+examples/synthetic/data.csv -text whitespace=cr-at-eol
