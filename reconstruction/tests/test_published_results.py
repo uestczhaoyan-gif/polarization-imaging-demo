@@ -19,7 +19,7 @@ class PublishedResultsTests(unittest.TestCase):
             path=folder/name
             self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),expected,name)
             listed.add(name)
-        actual={p.relative_to(folder).as_posix() for sub in ['z_tape','synthetic']
+        actual={p.relative_to(folder).as_posix() for sub in ['z_tape','synthetic','dark_80mm_20260909']
                 for p in (folder/sub).rglob('*') if p.is_file() and '.mpl-cache' not in p.parts}
         self.assertEqual(listed,actual)
 
@@ -36,3 +36,20 @@ class PublishedResultsTests(unittest.TestCase):
                 self.assertEqual(image[r,c],int(np.median(raw[a:b])>=metadata['threshold_A']))
                 self.assertTrue(np.all(d['sample_row'][a:b]==r))
                 self.assertTrue(np.all(d['sample_col'][a:b]==c))
+
+    def test_dark_data_and_both_mappings(self):
+        from snake_scan.core import read_data
+        path=ROOT/'examples/dark_80mm_20260909/data/raw_export.xls'
+        raw,_,_,info=read_data(path)
+        self.assertEqual(info['point_base'],8)
+        self.assertEqual(len(raw),20059)
+        self.assertEqual(info['sha256'],'079a4905b7261c008347127aea21e42735a4a85c0fd46b373dfa4ef5f352c514')
+        for name in ['anchored','uniform']:
+            with np.load(ROOT/f'results/dark_80mm_20260909/{name}/reconstruction.npz',allow_pickle=False) as d:
+                np.testing.assert_array_equal(d['raw_current_A'],raw)
+                self.assertEqual(d['binary'].shape,(40,40))
+                for r,c in np.ndindex(40,40):
+                    a,b=d['limits'][r,c]
+                    self.assertEqual(d['median_A'][r,c],np.median(raw[a:b]))
+                    self.assertTrue(np.all(d['sample_row'][a:b]==r))
+                    self.assertTrue(np.all(d['sample_col'][a:b]==c))

@@ -1,9 +1,10 @@
 # 随项目提供的完整结果
 
-这里是 v1.1.0 发布时生成的结果快照，随 Git 仓库和完整 ZIP 一起提供。查看结果不用安装 Python；重新计算的结果默认写入项目根目录的 `outputs/`。
+这里保存原重构v1.1.0的结果以及统一项目v2.1.0新增的暗环境结果，随 Git 仓库和完整 ZIP 一起提供。查看结果不用安装 Python；重新计算的结果默认写入 `reconstruction/outputs/`。
 
 - [Z 胶带实测交互图](z_tape/viewer.html)：120,311 个原始点，29×50 像素的估计重构。
 - [合成数据交互图](synthetic/viewer.html)：非均匀时间戳与正反向扫描，具有已知答案。
+- [80×80 mm 暗环境交互图](dark_80mm_20260909/anchored/viewer.html)：20,059个原始点、40×40像素，波形辅助分行估计；含快速横移的不确定区间。[固定周期对照](dark_80mm_20260909/uniform/02_reconstruction.png) · [相位敏感性](dark_80mm_20260909/03_timing_sensitivity.png)。
 - [结果校验清单](manifest.sha256)：本目录生成文件的 SHA256；原始数据校验值另保存在各例子的 metadata.json。
 
 GitHub 网页不会执行 HTML 交互代码，请下载到本地并用现代浏览器打开。

@@ -1,0 +1,16 @@
+{
+  "source_filename": "I-t采集数据2026.09.09--21-16-34.xls",
+  "source_sha256": "079a4905b7261c008347127aea21e42735a4a85c0fd46b373dfa4ef5f352c514",
+  "reported": {
+    "width_mm": 80, "height_mm": 80, "speed_mm_s": 2,
+    "start_wait_s_approx": 12.8, "motion_duration_s_approx": 1720,
+    "motion_duration_uncertainty_s_approx": 60,
+    "environment": "dark", "origin": "upper-left corner; detector initially shaded",
+    "rapid_horizontal_motion_events": 1,
+    "reset_issue": "RESET did not restart normally after modifications; reflashing did"
+  },
+  "assumed": {"line_step_mm": 2, "rows": 40, "first_scan_direction": "right"},
+  "unknown": ["sample timestamps", "actual sampling interval", "row start/stop events",
+              "rapid-motion event time and position", "actual flashed HEX/config",
+              "driver firmware version", "received sample photo"]
+}

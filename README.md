@@ -10,6 +10,8 @@
 
 ## 第一次打开
 
+新增 [80×80 mm 暗环境实测](reconstruction/examples/dark_80mm_20260909/README.md)：完整原始曲线、固定周期对照、波形辅助估计图和分行敏感性比较。双击 `open_latest_results.cmd` 查看互动结果；图中异常运动区间没有被当成已精确修复。
+
 下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，或在仓库页面选择 Code → Download ZIP，解压后：
 
 1. **先看结果**：双击根目录 `open_results.cmd`，或用浏览器打开 `reconstruction/results/z_tape/viewer.html`。不需要 Python、不需要联网。
@@ -83,6 +85,8 @@ Python：识别有效横扫 → 像素分箱 → 奇偶方向重排
 
 ## Python：重算与自己的数据
 
+**先用简明入口**：运行 `python reconstruction/simple_reconstruct.py` 或双击 `run_simple.cmd`。日常只需读 [simple_reconstruct.py](reconstruction/simple_reconstruct.py)，修改 [simple.json](reconstruction/examples/dark_80mm_20260909/simple.json)。它复用图表导出模块，保留逐点对应关系；已有逐点时间戳或需要高级模式时再使用下方完整入口。
+
 在项目根目录打开终端：
 
 ```bash
@@ -109,6 +113,8 @@ python reconstruction/reconstruct.py run --config reconstruction/local/config.js
 所有模式还需数据路径、宽度、行距、每行像素数和阈值策略。积分时间不是采样间隔，约数启动等待也不能直接换算成点数。当前位置模型要求每行等宽、固定行距和有效横扫内匀速；非匀速编码器轨迹、多通道偏振量与自动采集是后续扩展。
 
 ## 实测结果与验证边界
+
+新一次快速横移和RESET异常的 [二次核查与商家沟通说明](docs/复位与商家排查.md) 已补充。主机C函数检查会显式复现到位回复误判风险；通过检查不代表固件缺口已修复。本次未改动固件运行逻辑。
 
 Z 示例有 120,311 个原始采样，当前估计重构为 29×50 像素，每像素对应 77 或 78 个原始点。蓝色为低电流、黄色为高电流；没有按照片补画、去孤点或修整轮廓。起点、周期和换行占时不确定，图中还包含 I/导轨的真实遮挡。
 

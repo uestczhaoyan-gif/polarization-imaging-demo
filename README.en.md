@@ -10,6 +10,8 @@ This repository combines the stage controller and reconstruction example while r
 
 ## Start here
 
+New: the [80×80 mm measurement in darkness](reconstruction/examples/dark_80mm_20260909/README.md) includes the full raw curve, a constant-period comparison, waveform-assisted estimates, and timing sensitivity. Open `open_latest_results.cmd` for the interactive result. The unknown rapid-motion interval has not been precisely corrected.
+
 Download the [complete release](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest), or choose Code → Download ZIP on GitHub, then extract it.
 
 1. **View the results:** double-click `open_results.cmd`, or open `reconstruction/results/z_tape/viewer.html` in a browser. No Python installation or network connection is required.
@@ -83,6 +85,8 @@ There is no mechanical homing, hardware limit input, or emergency-stop input. Co
 
 ## Python reconstruction
 
+**Start with the short entry point:** run `python reconstruction/simple_reconstruct.py`, or double-click `run_simple.cmd`. Read [simple_reconstruct.py](reconstruction/simple_reconstruct.py) and edit [simple.json](reconstruction/examples/dark_80mm_20260909/simple.json). It reuses plotting/export helpers and retains sample-to-pixel mappings. Use the full interface below for measured timestamps or advanced modes.
+
 From the repository root:
 
 ```bash
@@ -109,6 +113,8 @@ python reconstruction/reconstruct.py run --config reconstruction/local/config.js
 All modes also require the input path, scan width, line spacing, column count, and threshold strategy. Integration time is not the sample interval, and an approximate startup wait cannot directly determine a sample offset. The spatial model assumes equal-width rows, constant line spacing, and constant-speed valid horizontal intervals. Encoder-based nonuniform-motion mapping, multichannel polarization quantities, and automatic acquisition are future extensions.
 
 ## Measured example and validation limits
+
+The [follow-up audit and vendor checklist](docs/复位与商家排查.md) covers the repeated rapid motion and RESET issue. Host C checks explicitly reproduce premature-completion risks from incorrect replies; passing these checks does not mean the firmware weaknesses are fixed. Runtime firmware logic is unchanged.
 
 The taped-Z recording contains 120,311 original samples. Its current estimated reconstruction has 29×50 pixels, with 77 or 78 samples per pixel. Blue represents low current and yellow represents high current. No photograph-based filling, isolated-pixel removal, or contour correction is applied. The origin, scan period, and turnaround duration are uncertain, and the image also contains actual I/rail occlusion.
 

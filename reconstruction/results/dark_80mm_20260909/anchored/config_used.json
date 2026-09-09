@@ -1,0 +1,21 @@
+{
+  "input_file": "data/raw_export.xls",
+  "input_format": "legacy",
+  "output_dir": "../../outputs/dark_80mm_20260909/anchored",
+  "width_mm": 80.0,
+  "line_step_mm": 2.0,
+  "rows": 40,
+  "columns": 40,
+  "threshold_uA": null,
+  "row_windows_csv": "estimated_windows.csv",
+  "window_source": "waveform estimates, not motion timestamps",
+  "title": "80 mm 暗场实验：波形辅助分行估计",
+  "notes": [
+    "扫描宽高80×80 mm、2 mm/s；行距2 mm暂沿用上次设置，未取得本次烧录配置。",
+    "等待约12.8秒、运动约1720±60秒；文件只有八进制点号，没有逐点时间戳。",
+    "重复高平台仅为波形相位参照，不是位置或行同步记录；40行来自扫描尺寸和假设行距。",
+    "第2到第3个平台间隔异常缩短，该区间与首尾外推行的几何关系不可靠。",
+    "报告过一次快速横移，电流数据不能证明发生时刻、原因或精确速度。"
+  ],
+  "mode": "simple / waveform estimates, not motion timestamps"
+}
