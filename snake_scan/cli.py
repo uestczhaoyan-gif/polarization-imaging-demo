@@ -1,6 +1,7 @@
 """命令行与逐项参数向导；所有实验参数最终写入 JSON，便于复现。"""
 import argparse
 import json
+import sys
 from pathlib import Path
 import webbrowser
 from .pipeline import reconstruct, positive
@@ -75,6 +76,10 @@ def write_config(path,cfg):
 
 
 def main():
+    # 英文 Windows / 重定向管道可能默认为 cp1252；中文提示也必须可输出。
+    for stream in (sys.stdout,sys.stderr):
+        if hasattr(stream,'reconfigure'):
+            stream.reconfigure(encoding='utf-8',errors='backslashreplace')
     parser=argparse.ArgumentParser(description='连续电流 → 蛇形二维图与双向交互对应表')
     sub=parser.add_subparsers(dest='command',required=True)
     run=sub.add_parser('run',help='按 JSON 配置重构')
