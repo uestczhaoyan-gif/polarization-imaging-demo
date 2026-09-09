@@ -1,0 +1,21 @@
+name: Project validation
+on: [push, pull_request]
+jobs:
+  validate:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.10', '3.12']
+    env:
+      PYTHONPATH: reconstruction
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -r reconstruction/requirements.txt
+      - run: python scripts/check_project.py
+      - run: python scripts/run_tests.py
+      - run: python reconstruction/reconstruct.py run --config reconstruction/examples/synthetic/config.json

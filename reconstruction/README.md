@@ -1,8 +1,10 @@
 # 蛇形扫描电流图像重构
 
+这是统一成像演示项目的重构模块。本页及下级文档中的命令默认在 `reconstruction/` 目录内执行；整个项目的入口见 [中文总览](../README.md) / [English overview](../README.en.md)。
+
 将源表连续电流记录重排为二维图，保存每个像素对应的全部原始采样。适合平移台透射成像、遮挡扫描和教学演示。提供 Python 例程、参数向导、实测示例、合成验证及无需联网的双向联动查看器。
 
-这是**单通道电流空间重构**，尚不计算 Stokes 参数、偏振度或偏振角。电机端可配合 [STM32 + ZDT 双轴平移台控制例程](https://github.com/uestczhaoyan-gif/stm32-zdt-xy-stage) 使用；本项目离线处理测量数据，不直接驱动电机。
+这是**单通道电流空间重构**，尚不计算 Stokes 参数、偏振度或偏振角。电机端可配合 [STM32 + ZDT 双轴平移台控制例程](https://github.com/uestczhaoyan-gif/polarization-imaging-demo) 使用；本项目离线处理测量数据，不直接驱动电机。
 
 ![实测示例：完整遮挡与 Z 区域](examples/z_tape/reference/02_reconstruction.png)
 
@@ -10,7 +12,7 @@
 
 ## 第一次打开项目
 
-**v1.1.0 已包含完整实测原始数据、参数、代码和生成结果。** 可以先下载 [完整项目包](https://github.com/uestczhaoyan-gif/snake-scan-reconstruction/releases/latest)，解压后双击 `open_results.cmd`，或直接用浏览器打开 `results/z_tape/viewer.html`。查看现成结果不需要安装 Python，也不需要联网。
+**v1.1.0 已包含完整实测原始数据、参数、代码和生成结果。** 可以先下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，解压后双击 `open_results.cmd`，或直接用浏览器打开 `results/z_tape/viewer.html`。查看现成结果不需要安装 Python，也不需要联网。
 
 - [从哪里开始读、怎样看曲线和对应表](docs/reading-guide.md)
 - [实际测量要注意什么、需要保存哪些数据](docs/measurement.md)

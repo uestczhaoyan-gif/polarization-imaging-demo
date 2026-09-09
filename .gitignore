@@ -38,3 +38,12 @@ Desktop.ini
 *.mov
 *.avi
 *.mkv
+
+# Python / release workspace
+__pycache__/
+*.py[cod]
+.mpl-cache/
+.venv/
+*.egg-info/
+/local/
+/dist/
