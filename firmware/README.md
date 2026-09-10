@@ -56,4 +56,4 @@
 
 修改扫描范围或速度只需编辑配置头文件。当前使用仓库中的四个 Keil 工程编译；若修改 `.ioc` 并重新生成代码，请先在副本中操作，逐项对照生成差异。CubeMX 的单工程配置不包含这四个阶段的全部自定义工程设置。
 
-完整操作见[硬件接线与首次运行](../docs/hardware/硬件接线与首次运行.md)；范围与方向见[参数与扫描路径](../docs/hardware/参数与扫描路径.md)。
+完整操作见[硬件接线与首次运行](../docs/hardware/wiring-and-first-run.md)；范围与方向见[参数与扫描路径](../docs/hardware/scan-parameters.md)。

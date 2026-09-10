@@ -1,136 +1,70 @@
-# Polarization Imaging Demo: XY Scanning and Current-Image Reconstruction
+# Polarization Imaging Demo
 
 [中文](README.md) | **English**
 
-A unified imaging demonstration project: an STM32F103 drives a ZDT XY stage through a serpentine scan, a source meter records photocurrent, and Python reconstructs a 2D image with an offline viewer linking every pixel to its original samples.
+An STM32 drives an XY stage in a serpentine pattern, a source meter records current, and Python reconstructs a 2D image. The project includes firmware, a graphical parameter editor, two measured examples, and offline viewers linking each pixel to its raw samples.
 
-This repository combines the stage controller and reconstruction example while retaining both Git histories, measured data, and published results. **The current implementation provides single-channel current imaging.** Acquisition is performed using the instrument's software; automatic motor–meter synchronization is not implemented, and the software does not calculate Stokes parameters, degree of polarization, or polarization angle.
-
-![Measured reconstruction of the taped Z](reconstruction/examples/z_tape/reference/02_reconstruction.png)
+The current implementation provides single-channel current imaging. Acquisition uses the instrument software; motor–meter synchronization and Stokes/polarization calculations are not implemented.
 
 ## Start here
 
-New: the [80×80 mm measurement in darkness](reconstruction/examples/dark_80mm_20260909/README.md) includes the full raw curve, a constant-period comparison, waveform-assisted estimates, and timing sensitivity. Open `open_latest_results.cmd` for the interactive result. The unknown rapid-motion interval has not been precisely corrected.
+Download and extract the [complete project](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest).
 
-The [sample photo and mapping guide](reconstruction/examples/dark_80mm_20260909/photo-comparison.md) now show the rectangular tape frame, complete raw trace, two-color reconstruction, and a pixel example with exact source indices.
+1. **Edit stage parameters:** double-click `START.cmd`, the single Windows entry point. Enter scan dimensions, speed and directions, preview the changes, then save. Rebuild and flash the appropriate Keil project afterward. [Editor guide](docs/hardware/configuration-ui.md)
+2. **View measurements:** choose a case in the workspace's experiments tab, or open a `viewer.html` from the table below. Viewing saved results does not require Python.
+3. **Prepare a measurement:** read the [wiring guide](docs/hardware/wiring-and-first-run.md) and [measurement checklist](docs/reconstruction/measurement.md). Save actual settings, timestamps and per-line motion events.
+4. **Review reconstruction:** start with the [core processing guide](docs/reconstruction/core-process.md), then run an example.
 
-Download the [complete release](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest), or choose Code → Download ZIP on GitHub, then extract it.
+The editor requires Python 3.10+ with Tkinter and no third-party packages. On macOS/Linux run `python tools/control_panel.py`. Download HTML viewers before opening them; GitHub does not execute them. Detailed documentation and the editor interface are in Chinese.
 
-1. **View the results:** double-click `open_results.cmd`, or open `reconstruction/results/z_tape/viewer.html` in a browser. No Python installation or network connection is required.
-2. **Explore the mapping:** click an image pixel to inspect its scan line and all original samples; click a trace to locate the corresponding pixel. See the [reading guide](reconstruction/docs/reading-guide.md).
-3. **Prepare a measurement:** read the [measurement checklist](reconstruction/docs/measurement.md), and save timestamps, per-line motion records, and instrument settings.
-4. **Run the stage:** follow the [wiring and first-run guide](docs/hardware/硬件接线与首次运行.md), progressing through communication-only, 1 mm, 10 mm, and full-scan checks.
-5. **Reconstruct your data:** install the Python dependencies and use the example or configuration wizard below.
+## Measured examples
 
-GitHub's HTML source preview is not interactive. Download the viewer and open it locally.
+| Case | Data, settings and notes | Saved results |
+|---|---|---|
+| Taped Z · ambient light | [tape-z](experiments/tape-z/README.md): 120,311 samples without synchronization | [Viewer](experiments/tape-z/results/viewer.html) · [Image](experiments/tape-z/results/02_reconstruction.png) |
+| Rectangular tape frame · darkness | [tape-frame](experiments/tape-frame/README.md): 20,059 samples, 80×80 mm | [Viewer](experiments/tape-frame/results/anchored/viewer.html) · [Photo comparison](experiments/tape-frame/photo-comparison.md) |
 
-## Measurement workflow
+The two cases are peers. Each contains its own raw data, configurations, notes and `results/`. A separate [synthetic example](experiments/synthetic/README.md) provides a known answer for validation.
+
+## Layout
 
 ```text
-Mount the sample, identify the origin/directions, and record dark/bright references
-                                  ↓
-Start saving raw current and per-sample timestamps from the source meter
-                                  ↓
-STM32: horizontal X scan → Y step → reverse X scan
-                                  ↓
-Save each valid scan interval, direction, stop time, and actual settings
-                                  ↓
-Python: select horizontal intervals → bin samples → reverse alternate rows
-                                  ↓
-Original I–point/I–t + 2D image + bidirectional tables + offline linked viewer
+START.cmd                 Single Windows workspace launcher
+firmware/                 STM32 firmware and four Keil projects
+tools/                    Desktop editor and parameter validation
+reconstruction/           Python reconstruction code and tests
+experiments/
+  tape-z/                 Z: raw data, settings, notes, results
+  tape-frame/             Frame: raw data, settings, photo, results
+  synthetic/              Synthetic validation with known answers
+  manifest.sha256         Published result checksums
+docs/                     Hardware, reconstruction, templates, maintenance
+scripts/                  Maintainer checks and release utilities
+local/                    Local backups and new outputs (Git-ignored)
 ```
 
-Acquisition may continue during startup, vertical moves, and turnarounds. Keep those raw samples and exclude the appropriate intervals using synchronized motion records. An estimation mode is available for older recordings without synchronization, but estimated boundaries are not calibrated motion measurements.
+See the [documentation index](docs/README.md) and [layout conventions](docs/project/layout.md). Keil/CubeMX directory and project names are retained inside the firmware module.
 
-## Repository layout
+## Run reconstruction
 
-| Path | Contents |
-|---|---|
-| `firmware/` | STM32 scan logic, ZDT protocol functions, HAL/CMSIS, and four Keil projects |
-| `docs/hardware/` | Wiring, scan parameters, troubleshooting, validation, and sources |
-| `docs/异常加速排查.md` | Review of the reported mid-scan acceleration and an evidence-collection procedure |
-| `reconstruction/snake_scan/` | Python input validation, scan windows, pixel aggregation, and linked viewer |
-| `reconstruction/examples/` | Measured taped-Z data, settings, synthetic examples, and explanatory figures |
-| `reconstruction/results/` | Complete published results and a SHA256 manifest |
-| `reconstruction/docs/` | Reading guide, input formats, measurement requirements, and extension notes |
-| `reconstruction/outputs/` | Newly generated outputs, ignored by Git by default |
-
-Hardware: [firmware guide](firmware/README.md), [scan parameters](docs/hardware/参数与扫描路径.md), [troubleshooting](docs/hardware/常见问题.md).
-
-Measurement and reconstruction: [what to save](reconstruction/docs/measurement.md), [experiment template](reconstruction/docs/experiment.template.json), [configuration](reconstruction/docs/configuration.md), [irregular-pixel analysis](reconstruction/docs/artifacts.md). Detailed documentation remains in Chinese.
-
-## Stage hardware and operation
-
-| Item | Repository default |
-|---|---|
-| Controller | Wildfire Xiaozhi STM32F103C8T6, dual-USB board |
-| Programmer | Wildfire DAP over SWD |
-| Motors | ZDT X42S second-generation closed-loop steppers, Emm V5 compatible |
-| Serial interface | USART1, PA9/PA10, 115200 baud, 8N1; TTL/RS485 as appropriate for the hardware |
-| Axis addresses | X=2, Y=1 |
-| Mechanics | 1.8° step angle, 16 microsteps, T6×1 lead screw with 1 mm/revolution lead |
-| Default scan | 100×100 mm, 2 mm line spacing, 1 mm/s |
-| Status LED | Active-low red LED on PA1 |
-
-Edit [snake_scan_config.h](firmware/Core/Inc/snake_scan_config.h) for routine parameters. The user-reported measurement ran at **2 mm/s with a changed Y direction**; the repository's default header remains at 1 mm/s. Save the actual flashed configuration and firmware revision rather than treating repository defaults as the measurement record.
-
-Open the projects in `firmware/MDK-ARM/` in this order:
-
-1. `01_COMM_CHECK_NO_MOVE.uvprojx`: communication only.
-2. `02_1MM_MOTION_TEST.uvprojx`: X moves 1 mm in each direction; total Y travel is 2 mm.
-3. `03_10MM_MOTION_TEST.uvprojx`: X moves 10 mm in each direction; total Y travel is 4 mm.
-4. `04_ACTUAL_SNAKE_RUN.uvprojx`: the configured scan area.
-
-Rebuild and flash after changing parameters or switching projects. The motion program performs one scan after startup/reset, communication checks, and a five-second countdown. Every completed horizontal pass is followed by a Y step, including the last pass. See the parameter guide for scan-line positions and the final stage position.
-
-There is no mechanical homing, hardware limit input, or emergency-stop input. Confirm available travel, turn off motor power while flashing, and retain a direct means of cutting motor power. Two episodes of unexpected mid-line acceleration were reported; see the [investigation notes](docs/异常加速排查.md). Subsequent normal operation alone does not establish that the fault is resolved.
-
-## Python reconstruction
-
-**Start with the short entry point:** run `python reconstruction/simple_reconstruct.py`, or double-click `run_simple.cmd`. Read [simple_reconstruct.py](reconstruction/simple_reconstruct.py) and edit [simple.json](reconstruction/examples/dark_80mm_20260909/simple.json). It reuses plotting/export helpers and retains sample-to-pixel mappings. Use the full interface below for measured timestamps or advanced modes.
-
-From the repository root:
+Run all commands from the repository root:
 
 ```bash
 python -m pip install -r reconstruction/requirements.txt
-python reconstruction/reconstruct.py run --config reconstruction/examples/z_tape/config.json --open
+python reconstruction/simple_reconstruct.py --config experiments/tape-frame/config.json
+python reconstruction/reconstruct.py run --config experiments/tape-z/config.json --open
 ```
 
-On Windows, you can also double-click `run_reconstruction.cmd`. New results are written to `reconstruction/outputs/z_tape/`; published reference results remain in `reconstruction/results/z_tape/`.
+New outputs go to `local/reconstruction/<case>/`; published snapshots remain in each case's `results/`. The full CLI refuses to overwrite existing outputs unless `--overwrite` is supplied. Copy a configuration for your measurement and enter its actual records rather than reusing estimated example timings. [Reconstruction module](reconstruction/README.md)
 
-Configure a new recording:
+## Firmware and validation limits
 
-```bash
-python reconstruction/reconstruct.py wizard --output reconstruction/local/config.json
-python reconstruction/reconstruct.py run --config reconstruction/local/config.json --open
-```
+The controller is an STM32F103C8T6 with ZDT X42S motors (X address 2, Y address 1). Repository defaults are 100×100 mm, 2 mm row spacing and 1 mm/s. The editor updates [snake_scan_config.h](firmware/Core/Inc/snake_scan_config.h); saving does not flash the board. Progress through communication-only, 1 mm, 10 mm and full-scan Keil projects. [Firmware guide](firmware/README.md)
 
-| Mode | Required information |
-|---|---|
-| `time_windows` | Per-sample timestamps and valid constant-speed scan start/end times and directions; supports irregular sampling |
-| `index_windows` | Valid per-line sample-index boundaries and directions; sampling must be uniform within each line |
-| `constant` | Stable samples per scan cycle and the first complete cycle's starting index |
-| `estimate` | A period search range, fitting interval, and signal continuity between adjacent rows; intended for unsynchronized legacy data |
+Reported rapid motion and reset problems remain unresolved. Host checks reproduce premature-completion risks; passing them does not establish fault-free firmware. [Motion investigation](docs/hardware/motion-anomalies.md) · [Reset and vendor checklist](docs/hardware/reset-and-vendor-checklist.md)
 
-All modes also require the input path, scan width, line spacing, column count, and threshold strategy. Integration time is not the sample interval, and an approximate startup wait cannot directly determine a sample offset. The spatial model assumes equal-width rows, constant line spacing, and constant-speed valid horizontal intervals. Encoder-based nonuniform-motion mapping, multichannel polarization quantities, and automatic acquisition are future extensions.
+Unsynchronized measured images use estimated row boundaries and are not edited to match photographs. Software checks do not replace firmware flashing or physical testing. Mechanical homing, hardware limits and emergency-stop inputs are not implemented; follow the hardware guide before running the stage.
 
-## Measured example and validation limits
+Maintainer checks: `python scripts/check_project.py` and `python scripts/run_tests.py`.
 
-The [follow-up audit and vendor checklist](docs/复位与商家排查.md) covers the repeated rapid motion and RESET issue. Host C checks explicitly reproduce premature-completion risks from incorrect replies; passing these checks does not mean the firmware weaknesses are fixed. Runtime firmware logic is unchanged.
-
-The taped-Z recording contains 120,311 original samples. Its current estimated reconstruction has 29×50 pixels, with 77 or 78 samples per pixel. Blue represents low current and yellow represents high current. No photograph-based filling, isolated-pixel removal, or contour correction is applied. The origin, scan period, and turnaround duration are uncertain, and the image also contains actual I/rail occlusion.
-
-Run the Python mapping, input-validation, and published-result checks:
-
-```bash
-python scripts/run_tests.py
-python scripts/check_project.py
-```
-
-This integration preserves the existing firmware motion code. Project paths and references are checked statically; firmware flashing and mechanical testing were not performed. Static checks do not establish hardware validation. See the [firmware validation record](docs/hardware/验证记录.md).
-
-## Licensing and maintenance
-
-Original code, documentation, and measured examples retain their respective [root license](LICENSE) and [reconstruction license](reconstruction/LICENSE). ST, Arm, and ZDT notices are retained in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
-This is the unified maintenance repository. Code, data, and Git histories from both original projects are retained here; using this project does not require access to the former standalone repositories. See the [integration record](docs/项目合并记录.md).
+Original code retains the [root license](LICENSE) and [reconstruction license](reconstruction/LICENSE); [third-party notices](docs/project/third-party-notices.md) are preserved. Both original project histories are retained here. [Changelog](docs/project/changelog.md)

@@ -1,136 +1,70 @@
-# 偏振成像演示：双轴扫描与电流图像重构
+# 偏振成像演示
 
 **中文** | [English](README.en.md)
 
-一个完整的成像演示工程：STM32F103 控制 ZDT 双轴平移台进行蛇形扫描，源表记录光电流，Python 将连续采样重排为二维图，并提供像素与原始曲线双向对应的离线交互图。
+STM32 控制双轴平移台做蛇形扫描，源表记录电流，Python 将采样重构为二维图像。项目包含固件、图形化参数编辑器、两个实测案例和可逐像素反查原始数据的离线查看器。
 
-本项目将原来的平移台控制和重构例程合并维护，保留两部分 Git 历史、实测数据与全部结果。**目前实现的是单通道电流空间成像**；源表采集仍由仪器软件完成，尚未实现电机与源表的自动同步触发，也不计算 Stokes 参数、偏振度或偏振角。
+目前实现单通道电流空间成像；源表仍由仪器软件采集，没有电机—源表同步触发，也不计算 Stokes 参数或偏振度。
 
-![Z 胶带实测重构](reconstruction/examples/z_tape/reference/02_reconstruction.png)
+## 从这里开始
 
-## 第一次打开
+下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，解压后：
 
-新增 [80×80 mm 暗环境实测](reconstruction/examples/dark_80mm_20260909/README.md)：完整原始曲线、固定周期对照、波形辅助估计图和分行敏感性比较。双击 `open_latest_results.cmd` 查看互动结果；图中异常运动区间没有被当成已精确修复。
+1. **修改电机参数**：双击唯一的启动入口 `START.cmd`。填写范围、速度和方向，检查预览后保存，再到 Keil 编译、下载。[界面使用说明](docs/hardware/configuration-ui.md)
+2. **查看测量结果**：在工作台“实验与使用指南”页选择案例，打开交互结果；也可直接打开下表中的 `viewer.html`。查看结果不需要 Python。
+3. **开始新测量**：先读 [接线与首次运行](docs/hardware/wiring-and-first-run.md) 和 [测量记录清单](docs/reconstruction/measurement.md)，保留实际参数、时间戳与逐行运动记录。
+4. **理解或修改重构**：先看 [核心处理过程](docs/reconstruction/core-process.md)，再运行下面的示例。
 
-已补充 [本次矩形胶带框照片与图像对应说明](reconstruction/examples/dark_80mm_20260909/photo-comparison.md)，包含实物、完整原始曲线、双色图及可逐点核对的像素例子。
+工作台需要 Python 3.10+（含 Tkinter），不需要安装第三方库；macOS/Linux 运行 `python tools/control_panel.py`。GitHub 不能直接执行交互 HTML，请下载后打开。
 
-下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，或在仓库页面选择 Code → Download ZIP，解压后：
+## 两个实测案例
 
-1. **先看结果**：双击根目录 `open_results.cmd`，或用浏览器打开 `reconstruction/results/z_tape/viewer.html`。不需要 Python、不需要联网。
-2. **理解对应关系**：点击二维像素查看对应行和全部原始采样；点击曲线可反查像素。[阅读指南](reconstruction/docs/reading-guide.md)。
-3. **准备新实验**：先读 [测量记录清单](reconstruction/docs/measurement.md)，保存时间戳、逐行运动记录和仪器参数。
-4. **连接和运行平移台**：按 [硬件接线与首次运行](docs/hardware/硬件接线与首次运行.md) 依次完成通信、1 mm、10 mm 和正式扫描检查。
-5. **重算或换数据**：按下文安装 Python 依赖，运行示例或参数向导。
+| 案例 | 数据、配置与说明 | 已保存结果 |
+|---|---|---|
+| 胶带 Z 字母 · 环境光 | [tape-z](experiments/tape-z/README.md)：120,311点，缺少同步记录 | [交互图](experiments/tape-z/results/viewer.html) · [重构图](experiments/tape-z/results/02_reconstruction.png) |
+| 矩形胶带框 · 暗环境 | [tape-frame](experiments/tape-frame/README.md)：20,059点，80×80 mm | [交互图](experiments/tape-frame/results/anchored/viewer.html) · [照片与对应说明](experiments/tape-frame/photo-comparison.md) |
 
-GitHub 网页不会执行交互 HTML，需下载后用浏览器打开。
+两个文件夹地位相同：各自保留原始数据、参数、实验说明和 `results/`。另有 [合成验证案例](experiments/synthetic/README.md)，用于核对算法，不属于实测数据。
 
-## 一次实验的完整流程
+## 项目目录
 
 ```text
-安装样品、确认起点和方向、采集暗场/透光参考
-                     ↓
-源表开始保存原始电流与每点时间戳
-                     ↓
-STM32 驱动 X 横扫 → Y 步进 → X 反向横扫
-                     ↓
-保存逐行有效运动边界、方向、停止时刻和实际参数
-                     ↓
-Python：识别有效横扫 → 像素分箱 → 奇偶方向重排
-                     ↓
-原始 I–point/I–t + 二维图 + 双向对应表 + 离线交互图
+START.cmd                 Windows 统一工作台入口
+firmware/                 STM32 固件与四个 Keil 工程
+tools/                    参数界面与独立参数校验模块
+reconstruction/           Python 重构代码与测试
+experiments/
+  tape-z/                 Z 字母：数据、配置、说明、结果
+  tape-frame/             矩形框：数据、配置、照片、结果
+  synthetic/              已知答案的合成验证
+  manifest.sha256         全部已发布结果的校验清单
+docs/                     硬件、重构、模板与项目维护文档
+scripts/                  维护者检查与发布工具
+local/                    本地配置备份和新生成结果（不上传）
 ```
 
-启动等待、垂直移动和掉头期间可以继续采集，原始数据完整保留。重构时用同步记录排除这些区间。缺少同步的旧记录可使用估计模式，但恢复的行边界不应视为经过标定的真实运动轨迹。
+所有文档从 [文档目录](docs/README.md) 进入；文件命名和历史目录对应见 [目录规范](docs/project/layout.md)。固件内部保留 Keil/CubeMX 的标准目录与工程名称。
 
-## 目录与阅读入口
+## 运行重构
 
-| 目录/文件 | 内容 |
-|---|---|
-| `firmware/` | STM32 扫描逻辑、ZDT 协议、HAL/CMSIS、四个 Keil 工程 |
-| `docs/hardware/` | 接线、扫描参数、故障处理、固件验证和资料来源 |
-| `docs/异常加速排查.md` | X 轴途中突然加速的代码审查、假设和取证步骤 |
-| `reconstruction/snake_scan/` | Python 输入校验、扫描窗口、像素聚合与交互查看器 |
-| `reconstruction/examples/` | Z 胶带实测原始数据、参数、合成例子和解释图 |
-| `reconstruction/results/` | 随仓库发布的全部结果与 SHA256 清单 |
-| `reconstruction/docs/` | 阅读指南、数据格式、测量记录要求和扩展说明 |
-| `reconstruction/outputs/` | 自己重新运行产生的结果，默认不进入 Git |
-
-硬件入口：[固件说明](firmware/README.md) · [扫描参数](docs/hardware/参数与扫描路径.md) · [常见问题](docs/hardware/常见问题.md)。
-
-测量与重构入口：[应该保存什么](reconstruction/docs/measurement.md) · [实验记录模板](reconstruction/docs/experiment.template.json) · [算法参数](reconstruction/docs/configuration.md) · [不规则像素分析](reconstruction/docs/artifacts.md)。详细文档保持中文。
-
-## 平移台：硬件与运行
-
-| 项目 | 仓库默认配置 |
-|---|---|
-| 控制器 | 野火小智 STM32F103C8T6 双 USB 款 |
-| 下载器 | 野火 DAP，SWD |
-| 电机 | ZDT X42S 第二代闭环步进，兼容 Emm V5 命令 |
-| 串口 | USART1，PA9/PA10，115200、8N1，按硬件使用 TTL/RS485 |
-| 轴地址 | X=2，Y=1 |
-| 机械参数 | 1.8°步距角、16 细分、T6×1 丝杆，导程 1 mm/圈 |
-| 默认扫描 | 100×100 mm、行距 2 mm、速度 1 mm/s |
-| 状态灯 | PA1 红灯，低电平点亮 |
-
-日常参数在 [snake_scan_config.h](firmware/Core/Inc/snake_scan_config.h)。用户报告的实测运行设置为 **2 mm/s，并修改过 Y 方向**；仓库默认头文件仍为 1 mm/s，不能把默认配置直接当成本次烧录参数记录。请保存实际烧录的配置与固件版本。
-
-按顺序打开 `firmware/MDK-ARM/` 中的工程：
-
-1. `01_COMM_CHECK_NO_MOVE.uvprojx`：只检查通信。
-2. `02_1MM_MOTION_TEST.uvprojx`：X 往返各 1 mm，Y 累计 2 mm。
-3. `03_10MM_MOTION_TEST.uvprojx`：X 往返各 10 mm，Y 累计 4 mm。
-4. `04_ACTUAL_SNAKE_RUN.uvprojx`：使用配置中的正式范围。
-
-每次修改参数或切换工程后重新编译、下载。正式运动在上电/复位后完成通信检查和 5 秒倒计时后启动一次。每条水平线完成后都执行一次 Y 步进，包括最后一条；实际水平线位置与最终停点见扫描参数说明。
-
-程序没有机械回零、硬件限位或急停输入。运行前确认剩余行程；下载时关闭电机动力电源，保留可直接切断动力的开关。关于已报告的两次途中加速，请按 [专项排查文档](docs/异常加速排查.md) 记录并排查，不能仅因后续运行正常就确认问题消失。
-
-## Python：重算与自己的数据
-
-**先用简明入口**：运行 `python reconstruction/simple_reconstruct.py` 或双击 `run_simple.cmd`。日常只需读 [simple_reconstruct.py](reconstruction/simple_reconstruct.py)，修改 [simple.json](reconstruction/examples/dark_80mm_20260909/simple.json)。它复用图表导出模块，保留逐点对应关系；已有逐点时间戳或需要高级模式时再使用下方完整入口。
-
-在项目根目录打开终端：
+以下命令均在项目根目录执行：
 
 ```bash
 python -m pip install -r reconstruction/requirements.txt
-python reconstruction/reconstruct.py run --config reconstruction/examples/z_tape/config.json --open
+python reconstruction/simple_reconstruct.py --config experiments/tape-frame/config.json
+python reconstruction/reconstruct.py run --config experiments/tape-z/config.json --open
 ```
 
-Windows 也可双击根目录 `run_reconstruction.cmd`。结果生成在 `reconstruction/outputs/z_tape/`，随项目保存的参考结果仍在 `reconstruction/results/z_tape/`。
+新结果写入 `local/reconstruction/<案例>/`；发布快照仍保留在各案例 `results/`。完整入口默认拒绝覆盖已有输出，确需重算时加 `--overwrite`。自己的实验先复制配置并填写本次记录，不能沿用案例估计的点数周期。[重构模块说明](reconstruction/README.md)
 
-用参数向导准备新实验：
+## 固件和验证边界
 
-```bash
-python reconstruction/reconstruct.py wizard --output reconstruction/local/config.json
-python reconstruction/reconstruct.py run --config reconstruction/local/config.json --open
-```
+控制器为 STM32F103C8T6，ZDT X42S 双轴电机；X地址2、Y地址1。仓库默认100×100 mm、行距2 mm、速度1 mm/s。工作台编辑 [snake_scan_config.h](firmware/Core/Inc/snake_scan_config.h)，保存配置不等于已烧录。四个 Keil 工程按通信检查、1 mm测试、10 mm测试、正式扫描依次使用。[固件说明](firmware/README.md)
 
-| 模式 | 需要的信息 |
-|---|---|
-| `time_windows` | 每点时间戳、逐行有效匀速横扫起止时间和方向；支持非均匀采样 |
-| `index_windows` | 逐行有效横扫起止下标和方向；行内采样需均匀 |
-| `constant` | 稳定的行周期点数与首个完整周期起点 |
-| `estimate` | 周期搜索范围、拟合区间和具有行间连续性的信号；用于缺同步的旧数据 |
+已报告的快速横移和复位异常尚未定位。现有主机检查能复现提前到位误判风险，不能据此认定固件无问题或故障已修复。[运动异常](docs/hardware/motion-anomalies.md) · [复位与商家排查](docs/hardware/reset-and-vendor-checklist.md)
 
-所有模式还需数据路径、宽度、行距、每行像素数和阈值策略。积分时间不是采样间隔，约数启动等待也不能直接换算成点数。当前位置模型要求每行等宽、固定行距和有效横扫内匀速；非匀速编码器轨迹、多通道偏振量与自动采集是后续扩展。
+没有位置日志的实测图使用估计分行，未按照片补画。软件检查不替代烧录、接线和实际运动验证。项目没有机械回零、硬件限位或急停输入，首次运行请按硬件指南检查行程与断电手段。
 
-## 实测结果与验证边界
+维护检查：`python scripts/check_project.py`、`python scripts/run_tests.py`。
 
-新一次快速横移和RESET异常的 [二次核查与商家沟通说明](docs/复位与商家排查.md) 已补充。主机C函数检查会显式复现到位回复误判风险；通过检查不代表固件缺口已修复。本次未改动固件运行逻辑。
-
-Z 示例有 120,311 个原始采样，当前估计重构为 29×50 像素，每像素对应 77 或 78 个原始点。蓝色为低电流、黄色为高电流；没有按照片补画、去孤点或修整轮廓。起点、周期和换行占时不确定，图中还包含 I/导轨的真实遮挡。
-
-Python 映射、发布快照和输入校验可运行：
-
-```bash
-python scripts/run_tests.py
-python scripts/check_project.py
-```
-
-固件在本次合并中保持原有运动代码；工程路径与参数引用做静态检查。没有执行烧录或机械实测，静态检查不能代替硬件验证。原验证表见 [固件验证记录](docs/hardware/验证记录.md)。
-
-## 许可与维护
-
-自有代码、说明和实测示例按各自 [LICENSE](LICENSE)、[重构许可](reconstruction/LICENSE) 保留。ST、Arm 和 ZDT 的原有声明见 [第三方说明](THIRD_PARTY_NOTICES.md)。
-
-本仓库是后续统一维护入口。两个原项目的代码、数据与 Git 历史均已迁入本仓库，使用本项目无需访问原独立仓库；迁移说明见 [合并记录](docs/项目合并记录.md)。
+自有代码见 [LICENSE](LICENSE) 与 [重构许可](reconstruction/LICENSE)；保留 [第三方声明](docs/project/third-party-notices.md)。两个原项目的历史均已合并，后续统一在本仓库维护。[更新记录](docs/project/changelog.md)

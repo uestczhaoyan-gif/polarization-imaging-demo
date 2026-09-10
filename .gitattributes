@@ -9,3 +9,15 @@
 *.png binary
 *.jpg binary
 *.pdf binary
+
+*.py text eol=lf
+*.html text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.cmd text eol=crlf
+experiments/*/data/** -text -diff
+experiments/synthetic/data.csv -text
+experiments/*/results/** -text whitespace=cr-at-eol
+experiments/*/results/**/*.svg -diff whitespace=-blank-at-eol,cr-at-eol
+experiments/*/results/**/viewer.html -diff
+experiments/*/results/**/sample_to_pixel.csv -diff

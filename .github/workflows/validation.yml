@@ -26,4 +26,10 @@ jobs:
       - run: python -m pip install -r reconstruction/requirements.txt
       - run: python scripts/check_project.py
       - run: python scripts/run_tests.py
-      - run: python reconstruction/reconstruct.py run --config reconstruction/examples/synthetic/config.json
+      - run: python reconstruction/reconstruct.py run --config experiments/synthetic/config.json
+      - name: Rebuild every published example from the current layout
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        run: python scripts/build_results.py
+      - name: Check rebuilt paths and result manifest
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.12'
+        run: python scripts/check_project.py

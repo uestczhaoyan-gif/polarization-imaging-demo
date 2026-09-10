@@ -1,0 +1,22 @@
+{
+  "input_file": "data/raw_export.xls",
+  "input_format": "legacy",
+  "output_dir": "../../local/reconstruction/tape-frame/uniform",
+  "width_mm": 80,
+  "line_step_mm": 2,
+  "rows": 40,
+  "columns": 40,
+  "threshold_uA": null,
+  "window_source": "constant-period comparison only",
+  "title": "80 mm 暗场实验：固定周期对照，不能校正异常运动",
+  "notes": [
+    "扫描宽高80×80 mm、2 mm/s；行距2 mm暂沿用上次设置，未取得本次烧录配置。",
+    "等待约12.8秒、运动约1720±60秒；文件只有八进制点号，没有逐点时间戳。",
+    "重复高平台仅为波形相位参照，不是位置或行同步记录；40行来自扫描尺寸和假设行距。",
+    "第2到第3个平台间隔异常缩短，该区间与首尾外推行的几何关系不可靠。",
+    "报告过一次快速横移，电流数据不能证明发生时刻、原因或精确速度。"
+  ],
+  "start_point": 107,
+  "row_period_points": 485.75,
+  "scan_fraction": 0.94
+}

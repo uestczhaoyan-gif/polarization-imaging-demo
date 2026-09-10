@@ -12,7 +12,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 class ConsoleTests(unittest.TestCase):
     def test_ascii_stdout_full_run(self):
-        source=ROOT/'examples/synthetic'
+        source=ROOT.parent/'experiments/synthetic'
         cfg=json.loads((source/'config.json').read_text(encoding='utf-8'))
         cfg['input_file']=str(source/'data.csv')
         cfg['row_windows_csv']=str(source/'rows.csv')

@@ -73,13 +73,13 @@ class MappingTests(unittest.TestCase):
             np.testing.assert_array_equal(d['binary'],[[0,1]])
 
     def test_synthetic_example(self):
-        d=reconstruct(ROOT/'examples/synthetic/config.json')
-        expected=np.loadtxt(ROOT/'examples/synthetic/expected_binary.csv',delimiter=',')
+        d=reconstruct(ROOT.parent/'experiments/synthetic/config.json')
+        expected=np.loadtxt(ROOT.parent/'experiments/synthetic/expected_binary.csv',delimiter=',')
         np.testing.assert_array_equal(d['binary'],expected)
         self.assertEqual(d['metadata']['time_source'],'measured timestamps')
 
     def test_octals_and_original_case(self):
-        d=reconstruct(ROOT/'examples/z_tape/config.json')
+        d=reconstruct(ROOT.parent/'experiments/tape-z/config.json')
         self.assertEqual(d['metadata']['sha256'],'9c72470a2cb5f710918991972a4550bba204f23ee5b4f306a60ed0094f48b9c3')
         np.testing.assert_array_equal(d['file_point_decimal'],np.arange(120311))
         self.assertEqual(d['metadata']['point_base'],8)
@@ -98,7 +98,7 @@ class MappingTests(unittest.TestCase):
         self.assertEqual(int(np.diff(d['limits'],axis=2).sum()),d['metadata']['points_used'])
 
     def test_html_payload_escaping(self):
-        d=reconstruct(ROOT/'examples/synthetic/config.json')
+        d=reconstruct(ROOT.parent/'experiments/synthetic/config.json')
         d['metadata']['config']['title']='</script><script>alert(1)</script>'
         with tempfile.TemporaryDirectory() as t:
             p=Path(t)/'viewer.html';export_html(d,p)

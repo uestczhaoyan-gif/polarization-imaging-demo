@@ -1,7 +1,7 @@
 """简明入口：读原始数据 → 指定扫描行 → 等分像素 → 奇偶翻转 → 输出。
 
 运行 python reconstruction/simple_reconstruct.py
-自己的数据：修改 examples/dark_80mm_20260909/simple.json，或 --config 自己的.json。
+自己的数据：修改 experiments/tape-frame/config.json，或 --config 自己的.json。
 绘图、CSV 和互动网页复用 snake_scan/report.py，日常不需要修改它。
 行窗口必须来自测量或明确注明的估计；本脚本不能修复未知变速轨迹。
 """
@@ -85,5 +85,5 @@ def run(config_path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--config', type=Path, default=Path(__file__).parent/'examples/dark_80mm_20260909/simple.json')
+    parser.add_argument('--config', type=Path, default=Path(__file__).resolve().parents[1]/'experiments/tape-frame/config.json')
     run(parser.parse_args().config)
