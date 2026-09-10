@@ -133,4 +133,4 @@ This integration preserves the existing firmware motion code. Project paths and 
 
 Original code, documentation, and measured examples retain their respective [root license](LICENSE) and [reconstruction license](reconstruction/LICENSE). ST, Arm, and ZDT notices are retained in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-This is the unified maintenance repository. The former reconstruction repository retains its history and points here instead of being maintained as a separate functional project. See the [integration record](docs/项目合并记录.md).
+This is the unified maintenance repository. Code, data, and Git histories from both original projects are retained here; using this project does not require access to the former standalone repositories. See the [integration record](docs/项目合并记录.md).

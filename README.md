@@ -133,4 +133,4 @@ python scripts/check_project.py
 
 自有代码、说明和实测示例按各自 [LICENSE](LICENSE)、[重构许可](reconstruction/LICENSE) 保留。ST、Arm 和 ZDT 的原有声明见 [第三方说明](THIRD_PARTY_NOTICES.md)。
 
-本仓库是后续统一维护入口。原重构仓库保留历史并指向这里，不再作为独立功能项目更新；迁移说明见 [合并记录](docs/项目合并记录.md)。
+本仓库是后续统一维护入口。两个原项目的代码、数据与 Git 历史均已迁入本仓库，使用本项目无需访问原独立仓库；迁移说明见 [合并记录](docs/项目合并记录.md)。
