@@ -12,6 +12,8 @@ This repository combines the stage controller and reconstruction example while r
 
 New: the [80×80 mm measurement in darkness](reconstruction/examples/dark_80mm_20260909/README.md) includes the full raw curve, a constant-period comparison, waveform-assisted estimates, and timing sensitivity. Open `open_latest_results.cmd` for the interactive result. The unknown rapid-motion interval has not been precisely corrected.
 
+The [sample photo and mapping guide](reconstruction/examples/dark_80mm_20260909/photo-comparison.md) now show the rectangular tape frame, complete raw trace, two-color reconstruction, and a pixel example with exact source indices.
+
 Download the [complete release](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest), or choose Code → Download ZIP on GitHub, then extract it.
 
 1. **View the results:** double-click `open_results.cmd`, or open `reconstruction/results/z_tape/viewer.html` in a browser. No Python installation or network connection is required.

@@ -10,7 +10,14 @@
     "reset_issue": "RESET did not restart normally after modifications; reflashing did"
   },
   "assumed": {"line_step_mm": 2, "rows": 40, "first_scan_direction": "right"},
+  "photo": {
+    "file": "sample_photo.jpg",
+    "original_filename": "88337ad5db1ac17278f75fec975d3007.jpg",
+    "sha256": "f43f66d9e358119c71042afb4b31862313b19faaafe9d1c65e59935d2f332b67",
+    "observed": "Black tape forms a rectangular frame with a central clear window; red spot at the outer upper-left corner.",
+    "use": "Qualitative comparison only; no photo-based fitting, pixel edits or timing calibration."
+  },
   "unknown": ["sample timestamps", "actual sampling interval", "row start/stop events",
               "rapid-motion event time and position", "actual flashed HEX/config",
-              "driver firmware version", "received sample photo"]
+              "driver firmware version", "calibrated photo scale and actual scan trajectory"]
 }

@@ -12,6 +12,8 @@
 
 新增 [80×80 mm 暗环境实测](reconstruction/examples/dark_80mm_20260909/README.md)：完整原始曲线、固定周期对照、波形辅助估计图和分行敏感性比较。双击 `open_latest_results.cmd` 查看互动结果；图中异常运动区间没有被当成已精确修复。
 
+已补充 [本次矩形胶带框照片与图像对应说明](reconstruction/examples/dark_80mm_20260909/photo-comparison.md)，包含实物、完整原始曲线、双色图及可逐点核对的像素例子。
+
 下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，或在仓库页面选择 Code → Download ZIP，解压后：
 
 1. **先看结果**：双击根目录 `open_results.cmd`，或用浏览器打开 `reconstruction/results/z_tape/viewer.html`。不需要 Python、不需要联网。

@@ -30,6 +30,6 @@ GitHub 网页不会执行 HTML 交互代码，请下载到本地并用现代浏�
 
 ## 维护结果快照
 
-项目维护者可在根目录运行 `python scripts/build_example_results.py`，重新生成两个例子的结果和校验清单。该脚本明确写入 `results/`；普通用户运行 `reconstruct.py run` 则按配置写入 `outputs/`。
+项目维护者可在整个项目根目录运行 `python reconstruction/scripts/build_example_results.py`，重新生成三个例子的结果和校验清单。该脚本明确写入 `results/`；普通用户运行 `reconstruct.py run` 则按配置写入 `outputs/`。
 
 结果中的名义坐标、估计行边界及相应局限见 [实验分析](../docs/artifacts.md)。快照是可复现的处理结果，不是经过硬件同步标定的真实位置标签。
