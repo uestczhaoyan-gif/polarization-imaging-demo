@@ -7,7 +7,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
 import webbrowser
-from config_model import FIELDS, parse_form, read_values, render, save_header, validate
+from config_model import FIELDS, MM_DISPLAY_KEYS, parse_form, read_values, render, save_header, validate
 
 ROOT = Path(__file__).resolve().parents[1]
 HEADER = ROOT / 'firmware/Core/Inc/snake_scan_config.h'
@@ -92,7 +92,7 @@ class ControlPanel(ttk.Frame):
 
     @staticmethod
     def form_value(key, value):
-        return str(Decimal(value) / 1000) if key == 'SCAN_SPEED_UM_PER_SEC' else str(value)
+        return str(Decimal(value) / 1000) if key in MM_DISPLAY_KEYS else str(value)
 
     def reload(self):
         try:
@@ -117,6 +117,7 @@ class ControlPanel(ttk.Frame):
             self.preview.insert('1.0', diff or '参数与当前文件相同。')
             self.preview.config(state='disabled')
             self.summary.set(f"正式扫描：{info['rows']} 行；最后横扫 Y={info['last_line_y_mm']} mm，末尾步进到 {info['final_y_mm']} mm。\n"
+                             f"X 每次 {info['x_pulses']} 脉冲；Y 每次 {info['y_pulses']} 脉冲；可设距离增量 {info['minimum_step_mm']:g} mm。\n"
                              f"命令转速 {info['rpm']} RPM；换算速度 {info['actual_mm_s']:.4g} mm/s。\n"
                              f"仅匀速运动约 {info['ideal_motion_seconds']/60:.2f} 分钟，另加启动、通信、换轴与加减速时间。\n"
                              '1 mm / 10 mm 测试工程使用各自固定范围；这里预览的是正式扫描。')

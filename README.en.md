@@ -10,7 +10,7 @@ The current implementation provides single-channel current imaging. Acquisition 
 
 Download and extract the [complete project](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest).
 
-1. **Edit stage parameters:** double-click `START.cmd`, the single Windows entry point. Enter scan dimensions, speed and directions, preview the changes, then save. Rebuild and flash the appropriate Keil project afterward. [Editor guide](docs/hardware/configuration-ui.md)
+1. **Edit stage parameters:** double-click `START.cmd`, the single Windows entry point. Enter scan dimensions (including fractional line spacing such as 0.5 or 0.1 mm), speed and directions, preview the changes, then save. Rebuild and flash the appropriate Keil project afterward. [Editor guide](docs/hardware/configuration-ui.md)
 2. **View measurements:** choose a case in the workspace's experiments tab, or open a `viewer.html` from the table below. Viewing saved results does not require Python.
 3. **Prepare a measurement:** read the [wiring guide](docs/hardware/wiring-and-first-run.md) and [measurement checklist](docs/reconstruction/measurement.md). Save actual settings, timestamps and per-line motion events.
 4. **Review reconstruction:** start with the [core processing guide](docs/reconstruction/core-process.md), then run an example.
@@ -61,7 +61,9 @@ New outputs go to `local/reconstruction/<case>/`; published snapshots remain in 
 
 The controller is an STM32F103C8T6 with ZDT X42S motors (X address 2, Y address 1). Repository defaults are 100×100 mm, 2 mm row spacing and 1 mm/s. The editor updates [snake_scan_config.h](firmware/Core/Inc/snake_scan_config.h); saving does not flash the board. Progress through communication-only, 1 mm, 10 mm and full-scan Keil projects. [Firmware guide](firmware/README.md)
 
-Reported rapid motion and reset problems remain unresolved. Host checks reproduce premature-completion risks; passing them does not establish fault-free firmware. [Motion investigation](docs/hardware/motion-anomalies.md) · [Reset and vendor checklist](docs/hardware/reset-and-vendor-checklist.md)
+Reported rapid motion and reset problems remain unresolved. The fractional-distance update adds acceptance, nominal-duration and consecutive reached-status checks; passing host simulations does not prove the hardware issue is fixed. [Motion investigation](docs/hardware/motion-anomalies.md) · [Reset and vendor checklist](docs/hardware/reset-and-vendor-checklist.md)
+
+Distances are entered in millimeters with up to three decimal places and stored as integer micrometers. With the default mechanics, the smallest supported setting is 0.005 mm (16 pulses); this is a software setting increment, not measured positioning accuracy. Set both drivers' Response mode to Receive or Both for short moves. Older `_MM` configuration backups must not replace the new `_UM` header; re-enter the original millimeter values in the updated editor.
 
 Unsynchronized measured images use estimated row boundaries and are not edited to match photographs. Software checks do not replace firmware flashing or physical testing. Mechanical homing, hardware limits and emergency-stop inputs are not implemented; follow the hardware guide before running the stage.
 

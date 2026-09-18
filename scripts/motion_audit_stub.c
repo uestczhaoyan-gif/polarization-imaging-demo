@@ -36,8 +36,13 @@ static int HAL_UART_Transmit_DMA(int *h, uint8_t *cmd, uint16_t size) {
     (void)h;
     uint8_t value=2;
     if (cmd[1]==0xFD) {
-        assert(size==13); ++moves; memcpy(last_move,cmd,13); finish=tick+50000;
+        uint32_t pulses=((uint32_t)cmd[6]<<24)|((uint32_t)cmd[7]<<16)|((uint32_t)cmd[8]<<8)|cmd[9];
+        uint32_t rpm=((uint32_t)cmd[3]<<8)|cmd[4];
+        assert(size==13); ++moves; memcpy(last_move,cmd,13);
+        finish=tick+(uint32_t)((60000ULL*pulses+rpm*MOTOR_PULSES_PER_REV-1)/(rpm*MOTOR_PULSES_PER_REV));
+        if (fault==5) { finish=tick; return HAL_OK; } /* whole command lost; motor idle */
         if (fault==1) return HAL_OK; /* missing acknowledgement */
+        if (fault==6) value=0xE2; /* driver rejects movement */
         if (fault==2) value=0x9F; /* late/stale reached response */
     } else {
         assert(cmd[1]==0x3A && size==3); ++queries;
@@ -57,22 +62,37 @@ static void reset(unsigned scenario) {
 int main(void) {
     const uint8_t expected[13]={2,0xFD,1,0,0x78,0,0,4,0xE2,0,2,0,0x6B};
     reset(0);
-    assert(Scan_MoveRelative(2,1,100,70000));
+    assert(Scan_MoveRelative(2,1,100000,70000));
     assert(moves==1 && queries>80 && tick>=finish);
     assert(memcmp(last_move,expected,13)==0);
     puts("PASS: 2 mm/s = 120 RPM; one 100 mm command; no midline speed command.");
     reset(1);
-    assert(Scan_MoveRelative(2,1,100,70000)); assert(moves==1 && tick>=finish);
+    assert(Scan_MoveRelative(2,1,100000,70000)); assert(moves==1 && tick>=finish);
     puts("PASS: missing acknowledgement does not resend the movement.");
     reset(4);
-    assert(!Scan_MoveRelative(2,1,100,70000)); assert(moves==1);
+    assert(!Scan_MoveRelative(2,1,100000,70000)); assert(moves==1);
     puts("PASS: lost status replies time out without resending movement.");
     reset(2);
-    assert(Scan_MoveRelative(2,1,100,70000)); assert(tick<finish && queries==0);
-    puts("REPRODUCED: stale FD/9F response can finish the wait prematurely (not fixed).");
+    assert(Scan_MoveRelative(2,1,100000,70000)); assert(tick>=finish && queries>80);
+    puts("PASS: stale FD/9F does not bypass status verification.");
     reset(3);
-    assert(Scan_MoveRelative(2,1,100,70000)); assert(tick<finish && queries==2);
-    puts("REPRODUCED: false reached bit after moving can finish the wait prematurely (not fixed).");
+    assert(Scan_MoveRelative(2,1,100000,70000)); assert(tick>=finish && queries>80);
+    puts("PASS: one early false reached bit does not complete a long move.");
+    const uint32_t distance_um[]={500,100,50,5};
+    const uint32_t expected_pulses[]={1600,320,160,16};
+    for (unsigned i=0;i<4;++i) {
+        reset(0);
+        assert(Scan_MoveRelative(2,0,distance_um[i],5000));
+        uint32_t sent=((uint32_t)last_move[6]<<24)|((uint32_t)last_move[7]<<16)|((uint32_t)last_move[8]<<8)|last_move[9];
+        assert(sent==expected_pulses[i] && moves==1 && queries==2 && tick>=finish);
+    }
+    puts("PASS: 0.5/0.1/0.05/0.005 mm send exact pulses; short moves finish before first query.");
+    reset(1); assert(!Scan_MoveRelative(2,1,100,5000)); assert(moves==1);
+    reset(5); assert(!Scan_MoveRelative(2,1,100,5000)); assert(moves==1);
+    reset(6); assert(!Scan_MoveRelative(2,1,100,5000)); assert(moves==1 && queries==0);
+    reset(2); assert(!Scan_MoveRelative(2,1,100,5000)); assert(moves==1);
+    puts("PASS: short move without acceptance/motion evidence, lost command, rejection, and stale-only acknowledgement fail closed.");
+    reset(0); assert(!Scan_MoveRelative(2,1,0,5000)); assert(moves==0);
     puts("Scope: host functions with simulated HAL/replies; no Keil build, DMA timing or motor test.");
     return 0;
 }

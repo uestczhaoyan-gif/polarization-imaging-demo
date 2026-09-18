@@ -13,21 +13,21 @@
 /* ========================================================================== */
 
 /*
- * 掩模版的水平扫描宽度和垂直扫描高度，单位均为毫米。
+ * 掩模版的水平扫描宽度和垂直扫描高度，固件单位均为微米（um）；界面仍输入毫米。
  *
  * 示例：
- *   100 mm x 100 mm：宽度=100，高度=100
- *   100 mm x  50 mm：宽度=100，高度= 50
- *    50 mm x 100 mm：宽度= 50，高度=100
+ *   100 mm x 100 mm：宽度=100000，高度=100000
+ *   100 mm x  50 mm：宽度=100000，高度=50000
+ *    50 mm x 100 mm：宽度=50000，高度=100000
  */
-#define MASK_SCAN_WIDTH_MM                 100UL
-#define MASK_SCAN_HEIGHT_MM                100UL
+#define MASK_SCAN_WIDTH_UM                 100000UL
+#define MASK_SCAN_HEIGHT_UM                100000UL
 
 /*
- * 相邻两条水平扫描线之间的垂直距离，单位毫米。
+ * 相邻两条水平扫描线之间的垂直距离，固件单位微米。500=0.5 mm，100=0.1 mm。
  * 当前为2 mm。掩模版高度必须能被该数值整除。
  */
-#define SCAN_LINE_STEP_MM                  2UL
+#define SCAN_LINE_STEP_UM                  2000UL
 
 /* 扫描线速度：1000 um/s = 1.000 mm/s。 */
 #define SCAN_SPEED_UM_PER_SEC              1000UL
@@ -47,8 +47,8 @@
  * 软件安全行程，必须不大于机械实际可用行程。
  * 程序会在编译时阻止掩模版宽度或高度超过这些数值。
  */
-#define X_AXIS_MAX_SAFE_TRAVEL_MM          100UL
-#define Y_AXIS_MAX_SAFE_TRAVEL_MM          100UL
+#define X_AXIS_MAX_SAFE_TRAVEL_UM          100000UL
+#define Y_AXIS_MAX_SAFE_TRAVEL_UM          100000UL
 
 /* ========================================================================== */
 /* 2. 电机、丝杆和通信参数：硬件不变时不要修改                               */
@@ -97,21 +97,21 @@
 #endif
 
 #if (SCAN_STAGE == SCAN_STAGE_COMM_CHECK)
-#define ACTIVE_SCAN_WIDTH_MM                1UL
-#define ACTIVE_SCAN_HEIGHT_MM               1UL
-#define ACTIVE_LINE_STEP_MM                 1UL
+#define ACTIVE_SCAN_WIDTH_UM                1000UL
+#define ACTIVE_SCAN_HEIGHT_UM               1000UL
+#define ACTIVE_LINE_STEP_UM                 1000UL
 #elif (SCAN_STAGE == SCAN_STAGE_1MM_TEST)
-#define ACTIVE_SCAN_WIDTH_MM                1UL
-#define ACTIVE_SCAN_HEIGHT_MM               2UL
-#define ACTIVE_LINE_STEP_MM                 1UL
+#define ACTIVE_SCAN_WIDTH_UM                1000UL
+#define ACTIVE_SCAN_HEIGHT_UM               2000UL
+#define ACTIVE_LINE_STEP_UM                 1000UL
 #elif (SCAN_STAGE == SCAN_STAGE_10MM_TEST)
-#define ACTIVE_SCAN_WIDTH_MM                10UL
-#define ACTIVE_SCAN_HEIGHT_MM               4UL
-#define ACTIVE_LINE_STEP_MM                 2UL
+#define ACTIVE_SCAN_WIDTH_UM                10000UL
+#define ACTIVE_SCAN_HEIGHT_UM               4000UL
+#define ACTIVE_LINE_STEP_UM                 2000UL
 #elif (SCAN_STAGE == SCAN_STAGE_ACTUAL_RUN)
-#define ACTIVE_SCAN_WIDTH_MM                MASK_SCAN_WIDTH_MM
-#define ACTIVE_SCAN_HEIGHT_MM               MASK_SCAN_HEIGHT_MM
-#define ACTIVE_LINE_STEP_MM                 SCAN_LINE_STEP_MM
+#define ACTIVE_SCAN_WIDTH_UM                MASK_SCAN_WIDTH_UM
+#define ACTIVE_SCAN_HEIGHT_UM               MASK_SCAN_HEIGHT_UM
+#define ACTIVE_LINE_STEP_UM                 SCAN_LINE_STEP_UM
 #else
 #error "SCAN_STAGE must be one of the four SCAN_STAGE_* values"
 #endif
@@ -122,7 +122,7 @@
  * 100x50 mm、行距2 mm时执行25条水平线。
  */
 #define ACTIVE_HORIZONTAL_PASS_COUNT        \
-        (ACTIVE_SCAN_HEIGHT_MM / ACTIVE_LINE_STEP_MM)
+        (ACTIVE_SCAN_HEIGHT_UM / ACTIVE_LINE_STEP_UM)
 
 /* ========================================================================== */
 /* 4. 自动换算和通信容错参数：不建议修改                                     */
@@ -132,6 +132,12 @@
         (MOTOR_FULL_STEPS_PER_REV * MOTOR_MICROSTEP)
 #define PULSES_PER_MM                       \
         ((MOTOR_PULSES_PER_REV * 1000UL) / LEAD_UM_PER_REV)
+#define DISTANCE_PULSES(um) \
+        ((1ULL * (um) * MOTOR_PULSES_PER_REV) / LEAD_UM_PER_REV)
+/* Nominal duration rounded up, using the integer RPM actually sent. */
+#define MOVE_NOMINAL_MS(um) \
+        ((1ULL * (um) * 60000ULL + SCAN_SPEED_RPM * LEAD_UM_PER_REV - 1ULL) / \
+         (1ULL * SCAN_SPEED_RPM * LEAD_UM_PER_REV))
 #define SCAN_SPEED_RPM                      \
         (((SCAN_SPEED_UM_PER_SEC * 60UL) + (LEAD_UM_PER_REV / 2UL)) / \
          LEAD_UM_PER_REV)
@@ -144,36 +150,36 @@
 #define SCAN_START_COUNTDOWN_SECONDS        5U
 
 #define X_MOVE_TIMEOUT_MS                   \
-        (((ACTIVE_SCAN_WIDTH_MM * 1000000UL) / SCAN_SPEED_UM_PER_SEC) + 20000UL)
+        (MOVE_NOMINAL_MS(ACTIVE_SCAN_WIDTH_UM) + 20000UL)
 #define Y_MOVE_TIMEOUT_MS                   \
-        (((ACTIVE_LINE_STEP_MM * 1000000UL) / SCAN_SPEED_UM_PER_SEC) + 4000UL)
+        (MOVE_NOMINAL_MS(ACTIVE_LINE_STEP_UM) + 4000UL)
 
 /* ========================================================================== */
 /* 5. 编译期安全检查：参数不合理时直接阻止生成固件                            */
 /* ========================================================================== */
 
-#if (MASK_SCAN_WIDTH_MM == 0UL)
-#error "MASK_SCAN_WIDTH_MM must be greater than zero"
+#if (MASK_SCAN_WIDTH_UM == 0UL)
+#error "MASK_SCAN_WIDTH_UM must be greater than zero"
 #endif
 
-#if (MASK_SCAN_HEIGHT_MM == 0UL)
-#error "MASK_SCAN_HEIGHT_MM must be greater than zero"
+#if (MASK_SCAN_HEIGHT_UM == 0UL)
+#error "MASK_SCAN_HEIGHT_UM must be greater than zero"
 #endif
 
-#if (SCAN_LINE_STEP_MM == 0UL)
-#error "SCAN_LINE_STEP_MM must be greater than zero"
+#if (SCAN_LINE_STEP_UM == 0UL)
+#error "SCAN_LINE_STEP_UM must be greater than zero"
 #endif
 
-#if ((MASK_SCAN_HEIGHT_MM % SCAN_LINE_STEP_MM) != 0UL)
-#error "MASK_SCAN_HEIGHT_MM must be divisible by SCAN_LINE_STEP_MM"
+#if ((MASK_SCAN_HEIGHT_UM % SCAN_LINE_STEP_UM) != 0UL)
+#error "MASK_SCAN_HEIGHT_UM must be divisible by SCAN_LINE_STEP_UM"
 #endif
 
-#if (MASK_SCAN_WIDTH_MM > X_AXIS_MAX_SAFE_TRAVEL_MM)
-#error "Mask width exceeds X_AXIS_MAX_SAFE_TRAVEL_MM"
+#if (MASK_SCAN_WIDTH_UM > X_AXIS_MAX_SAFE_TRAVEL_UM)
+#error "Mask width exceeds X_AXIS_MAX_SAFE_TRAVEL_UM"
 #endif
 
-#if (MASK_SCAN_HEIGHT_MM > Y_AXIS_MAX_SAFE_TRAVEL_MM)
-#error "Mask height exceeds Y_AXIS_MAX_SAFE_TRAVEL_MM"
+#if (MASK_SCAN_HEIGHT_UM > Y_AXIS_MAX_SAFE_TRAVEL_UM)
+#error "Mask height exceeds Y_AXIS_MAX_SAFE_TRAVEL_UM"
 #endif
 
 #if (MOTOR_FULL_STEPS_PER_REV == 0UL)
@@ -219,6 +225,33 @@
 
 #if (MOTOR_COMM_RETRY_COUNT == 0U)
 #error "MOTOR_COMM_RETRY_COUNT must be greater than zero"
+#endif
+
+/* Reject fractional pulses instead of silently rounding the requested path. */
+#if (((1ULL * MASK_SCAN_WIDTH_UM * MOTOR_PULSES_PER_REV) % LEAD_UM_PER_REV) || \
+     ((1ULL * SCAN_LINE_STEP_UM * MOTOR_PULSES_PER_REV) % LEAD_UM_PER_REV) || \
+     ((1ULL * ACTIVE_SCAN_WIDTH_UM * MOTOR_PULSES_PER_REV) % LEAD_UM_PER_REV) || \
+     ((1ULL * ACTIVE_LINE_STEP_UM * MOTOR_PULSES_PER_REV) % LEAD_UM_PER_REV))
+#error "Distance must convert exactly to whole motor pulses"
+#endif
+#if ((DISTANCE_PULSES(MASK_SCAN_WIDTH_UM) > 0xFFFFFFFFULL) || \
+     (DISTANCE_PULSES(SCAN_LINE_STEP_UM) > 0xFFFFFFFFULL) || \
+     (DISTANCE_PULSES(ACTIVE_SCAN_WIDTH_UM) > 0xFFFFFFFFULL) || \
+     (DISTANCE_PULSES(ACTIVE_LINE_STEP_UM) > 0xFFFFFFFFULL))
+#error "Motion exceeds the 32-bit pulse command"
+#endif
+#if ((MASK_SCAN_WIDTH_UM > 4294000UL) || (MASK_SCAN_HEIGHT_UM > 4294000UL) || \
+     (X_AXIS_MAX_SAFE_TRAVEL_UM > 4294000UL) || (Y_AXIS_MAX_SAFE_TRAVEL_UM > 4294000UL))
+#error "Distance exceeds supported configuration range"
+#endif
+#if ((MOTOR_FULL_STEPS_PER_REV > 10000UL) || \
+     ((1ULL * SCAN_SPEED_UM_PER_SEC * 60UL + LEAD_UM_PER_REV / 2UL) > 0xFFFFFFFFULL))
+#error "Mechanical or speed conversion exceeds supported range"
+#endif
+#if ((MOVE_NOMINAL_MS(MASK_SCAN_WIDTH_UM) + 20000ULL > 0xFFFFFFFFULL) || \
+     (MOVE_NOMINAL_MS(SCAN_LINE_STEP_UM) + 4000ULL > 0xFFFFFFFFULL) || \
+     (X_MOVE_TIMEOUT_MS > 0xFFFFFFFFULL) || (Y_MOVE_TIMEOUT_MS > 0xFFFFFFFFULL))
+#error "Motion timeout exceeds the 32-bit timer"
 #endif
 
 #endif /* __SNAKE_SCAN_CONFIG_H */

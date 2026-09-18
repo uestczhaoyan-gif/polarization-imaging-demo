@@ -70,9 +70,9 @@ typedef enum
 /* Runtime state variables for scan progress and fault diagnosis. */
 volatile ScanState_t scan_state = SCAN_STATE_BOOT;
 volatile uint8_t scan_error = 0U;
-volatile uint16_t scan_line = 0U;
-volatile uint16_t scan_x_offset_mm = 0U;
-volatile uint16_t scan_y_offset_mm = 0U;
+volatile uint32_t scan_line = 0U;
+volatile uint32_t scan_x_offset_um = 0U;
+volatile uint32_t scan_y_offset_um = 0U;
 
 /* USER CODE END PV */
 
@@ -88,9 +88,11 @@ static bool Scan_WaitReply(uint8_t addr, uint8_t code, uint8_t *value,
 static bool Scan_ReadMotorStatus(uint8_t addr, uint8_t *status);
 static bool Scan_CheckAxis(uint8_t addr);
 static bool Scan_ResetMotorCounter(uint8_t addr);
-static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms);
+static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms,
+                                  uint32_t sent_tick, uint32_t nominal_ms,
+                                  bool accepted);
 static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
-                              uint32_t distance_mm, uint32_t timeout_ms);
+                              uint32_t distance_um, uint32_t timeout_ms);
 static void Scan_LedOn(void);
 static void Scan_LedOff(void);
 static void Scan_StartCountdown(void);
@@ -228,9 +230,12 @@ static bool Scan_ResetMotorCounter(uint8_t addr)
   return (reply == EMM_REPLY_OK);
 }
 
-static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms)
+static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms,
+                                  uint32_t sent_tick, uint32_t nominal_ms,
+                                  bool accepted)
 {
   bool moving_seen = false;
+  uint8_t reached_count = 0U;
   uint8_t status;
   uint32_t start_tick = HAL_GetTick();
 
@@ -243,11 +248,24 @@ static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms)
       if ((status & MOTOR_STATUS_REACHED_MASK) == 0U)
       {
         moving_seen = true;
+        reached_count = 0U;
       }
-      else if (moving_seen)
+      else if ((moving_seen || accepted) &&
+               ((uint32_t)(HAL_GetTick() - sent_tick) >= nominal_ms))
       {
-        return true;
+        /* Short moves may finish before the first status query. Require an
+         * acceptance acknowledgement or observed motion, then two reached
+         * samples; an unsolicited FD/9F alone is never completion authority.
+         * This checks driver status, not the measured mechanical position. */
+        if (++reached_count >= 2U)
+        {
+          return true;
+        }
       }
+    }
+    else
+    {
+      reached_count = 0U;
     }
   }
 
@@ -255,11 +273,18 @@ static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms)
 }
 
 static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
-                              uint32_t distance_mm, uint32_t timeout_ms)
+                              uint32_t distance_um, uint32_t timeout_ms)
 {
   bool reply_received;
   uint8_t reply;
-  uint32_t pulses = distance_mm * PULSES_PER_MM;
+  uint32_t pulses = (uint32_t)DISTANCE_PULSES(distance_um);
+  uint32_t sent_tick = HAL_GetTick();
+  uint32_t nominal_ms = (uint32_t)MOVE_NOMINAL_MS(distance_um);
+
+  if (pulses == 0U)
+  {
+    return false;
+  }
 
   Scan_ClearRxFrame();
   Emm_V5_Pos_Control(addr, direction, SCAN_SPEED_RPM, SCAN_ACCELERATION,
@@ -268,23 +293,17 @@ static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
   reply_received = Scan_WaitReply(addr, 0xFDU, &reply,
                                   MOTOR_REPLY_TIMEOUT_MS);
 
-  if (reply_received && (reply == EMM_REPLY_REACHED))
-  {
-    return true;
-  }
-
-  if (reply_received && (reply != EMM_REPLY_OK))
+  if (reply_received && (reply != EMM_REPLY_OK) &&
+      (reply != EMM_REPLY_REACHED))
   {
     return false;
   }
 
-  /*
-   * The default Response setting returns 0x02 (command accepted), not motion
-   * complete.  Reached/None may return no immediate FD frame, so the absence
-   * of that frame is not an error: Prf_TF below is the completion authority.
-   */
-  HAL_Delay(100U);
-  return Scan_WaitAxisReached(addr, timeout_ms);
+  /* Receive/Both response mode is required for reliable short moves.
+   * With no acknowledgement and no observed motion, stop on timeout rather
+   * than assuming that an idle motor received the command. Never resend it. */
+  return Scan_WaitAxisReached(addr, timeout_ms, sent_tick, nominal_ms,
+                             reply_received && (reply == EMM_REPLY_OK));
 }
 
 /* Xiaozhi dual-USB board red status LED on PA1 is active-low. */
@@ -343,35 +362,34 @@ static void Scan_Fail(uint8_t error_code)
 
 static void SnakeScan(void)
 {
-  uint16_t pass;
+  uint32_t pass;
   uint8_t x_direction;
 
-  for (pass = 0U; pass < (uint16_t)ACTIVE_HORIZONTAL_PASS_COUNT; ++pass)
+  for (pass = 0U; pass < ACTIVE_HORIZONTAL_PASS_COUNT; ++pass)
   {
-    scan_line = (uint16_t)(pass + 1U);
+    scan_line = pass + 1U;
     x_direction = ((pass & 1U) == 0U) ? X_FIRST_PASS_DIRECTION
                                       : X_ALTERNATE_PASS_DIRECTION;
 
     /* Alternate between the configured first-pass and return directions. */
     scan_state = SCAN_STATE_MOVING_X;
     if (!Scan_MoveRelative(X_AXIS_ADDR, x_direction,
-                           ACTIVE_SCAN_WIDTH_MM, X_MOVE_TIMEOUT_MS))
+                           ACTIVE_SCAN_WIDTH_UM, X_MOVE_TIMEOUT_MS))
     {
       Scan_Fail(3U);
     }
-    scan_x_offset_mm = ((pass & 1U) == 0U) ?
-                       (uint16_t)ACTIVE_SCAN_WIDTH_MM : 0U;
+    scan_x_offset_um = ((pass & 1U) == 0U) ?
+                       ACTIVE_SCAN_WIDTH_UM : 0U;
     HAL_Delay(AXIS_SWITCH_DELAY_MS);
 
     /* Every completed horizontal line is followed by one upward line step. */
     scan_state = SCAN_STATE_MOVING_Y;
     if (!Scan_MoveRelative(Y_AXIS_ADDR, Y_STEP_DIRECTION,
-                           ACTIVE_LINE_STEP_MM, Y_MOVE_TIMEOUT_MS))
+                           ACTIVE_LINE_STEP_UM, Y_MOVE_TIMEOUT_MS))
     {
       Scan_Fail(4U);
     }
-    scan_y_offset_mm = (uint16_t)(scan_y_offset_mm +
-                                  (uint16_t)ACTIVE_LINE_STEP_MM);
+    scan_y_offset_um += ACTIVE_LINE_STEP_UM;
     HAL_Delay(AXIS_SWITCH_DELAY_MS);
   }
 

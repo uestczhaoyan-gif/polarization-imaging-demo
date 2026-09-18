@@ -10,7 +10,7 @@ STM32 控制双轴平移台做蛇形扫描，源表记录电流，Python 将采�
 
 下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，解压后：
 
-1. **修改电机参数**：双击唯一的启动入口 `START.cmd`。填写范围、速度和方向，检查预览后保存，再到 Keil 编译、下载。[界面使用说明](docs/hardware/configuration-ui.md)
+1. **修改电机参数**：双击唯一的启动入口 `START.cmd`。填写范围、速度和方向（支持0.5、0.1 mm等小数行距），检查预览后保存，再到 Keil 编译、下载。[界面使用说明](docs/hardware/configuration-ui.md)
 2. **查看测量结果**：在工作台“实验与使用指南”页选择案例，打开交互结果；也可直接打开下表中的 `viewer.html`。查看结果不需要 Python。
 3. **开始新测量**：先读 [接线与首次运行](docs/hardware/wiring-and-first-run.md) 和 [测量记录清单](docs/reconstruction/measurement.md)，保留实际参数、时间戳与逐行运动记录。
 4. **理解或修改重构**：先看 [核心处理过程](docs/reconstruction/core-process.md)，再运行下面的示例。
@@ -61,7 +61,7 @@ python reconstruction/reconstruct.py run --config experiments/tape-z/config.json
 
 控制器为 STM32F103C8T6，ZDT X42S 双轴电机；X地址2、Y地址1。仓库默认100×100 mm、行距2 mm、速度1 mm/s。工作台编辑 [snake_scan_config.h](firmware/Core/Inc/snake_scan_config.h)，保存配置不等于已烧录。四个 Keil 工程按通信检查、1 mm测试、10 mm测试、正式扫描依次使用。[固件说明](firmware/README.md)
 
-已报告的快速横移和复位异常尚未定位。现有主机检查能复现提前到位误判风险，不能据此认定固件无问题或故障已修复。[运动异常](docs/hardware/motion-anomalies.md) · [复位与商家排查](docs/hardware/reset-and-vendor-checklist.md)
+已报告的快速横移和复位异常尚未定位。小数行距版本增加了接收确认、名义运动时间和连续到位状态检查；主机模拟通过不代表实机异常已解决。[运动异常](docs/hardware/motion-anomalies.md) · [复位与商家排查](docs/hardware/reset-and-vendor-checklist.md)
 
 没有位置日志的实测图使用估计分行，未按照片补画。软件检查不替代烧录、接线和实际运动验证。项目没有机械回零、硬件限位或急停输入，首次运行请按硬件指南检查行程与断电手段。
 

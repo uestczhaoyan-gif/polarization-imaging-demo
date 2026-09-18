@@ -13,15 +13,15 @@
 ## 2. 控制扫描范围的变量
 
 ```c
-#define MASK_SCAN_WIDTH_MM       100UL
-#define MASK_SCAN_HEIGHT_MM      100UL
-#define SCAN_LINE_STEP_MM          2UL
+#define MASK_SCAN_WIDTH_UM       100000UL
+#define MASK_SCAN_HEIGHT_UM      100000UL
+#define SCAN_LINE_STEP_UM          2000UL
 #define SCAN_SPEED_UM_PER_SEC   1000UL
 ```
 
-- `MASK_SCAN_WIDTH_MM`：每条水平扫描线的长度，单位 mm。
-- `MASK_SCAN_HEIGHT_MM`：整个扫描过程中垂直轴累计上升距离，单位 mm。
-- `SCAN_LINE_STEP_MM`：每完成一条水平线后，垂直轴上升距离，单位 mm。
+- `MASK_SCAN_WIDTH_UM`：每条水平扫描线的长度，固件单位 μm，界面输入 mm。
+- `MASK_SCAN_HEIGHT_UM`：整个扫描过程中垂直轴累计上升距离，固件单位 μm，界面输入 mm。
+- `SCAN_LINE_STEP_UM`：每完成一条水平线后，垂直轴上升距离，固件单位 μm，界面输入 mm。
 - `SCAN_SPEED_UM_PER_SEC`：两轴线速度，单位 um/s；1000即1 mm/s。
 
 ### 速度修改示例
@@ -52,7 +52,7 @@ T6x1导程为1000 um/圈，因此1 mm/s对应60 RPM，2 mm/s对应120 RPM。水�
 程序自动计算：
 
 ```text
-水平扫描线数 = MASK_SCAN_HEIGHT_MM / SCAN_LINE_STEP_MM
+水平扫描线数 = MASK_SCAN_HEIGHT_UM / SCAN_LINE_STEP_UM
 ```
 
 高度必须能被行距整除，否则编译会报错，防止扫描到一半出现不足一行的情况。
@@ -62,9 +62,9 @@ T6x1导程为1000 um/圈，因此1 mm/s对应60 RPM，2 mm/s对应120 RPM。水�
 ### 100 x 100 mm
 
 ```c
-#define MASK_SCAN_WIDTH_MM       100UL
-#define MASK_SCAN_HEIGHT_MM      100UL
-#define SCAN_LINE_STEP_MM          2UL
+#define MASK_SCAN_WIDTH_UM       100000UL
+#define MASK_SCAN_HEIGHT_UM      100000UL
+#define SCAN_LINE_STEP_UM          2000UL
 ```
 
 结果：50条水平线，垂直累计移动100 mm。
@@ -72,9 +72,9 @@ T6x1导程为1000 um/圈，因此1 mm/s对应60 RPM，2 mm/s对应120 RPM。水�
 ### 100 x 50 mm
 
 ```c
-#define MASK_SCAN_WIDTH_MM       100UL
-#define MASK_SCAN_HEIGHT_MM       50UL
-#define SCAN_LINE_STEP_MM          2UL
+#define MASK_SCAN_WIDTH_UM       100000UL
+#define MASK_SCAN_HEIGHT_UM       50000UL
+#define SCAN_LINE_STEP_UM          2000UL
 ```
 
 结果：25条水平线。因为是奇数条，扫描结束时水平滑台位于起点的另一侧。
@@ -82,9 +82,9 @@ T6x1导程为1000 um/圈，因此1 mm/s对应60 RPM，2 mm/s对应120 RPM。水�
 ### 50 x 100 mm
 
 ```c
-#define MASK_SCAN_WIDTH_MM        50UL
-#define MASK_SCAN_HEIGHT_MM      100UL
-#define SCAN_LINE_STEP_MM          2UL
+#define MASK_SCAN_WIDTH_UM        50000UL
+#define MASK_SCAN_HEIGHT_UM      100000UL
+#define SCAN_LINE_STEP_UM          2000UL
 ```
 
 结果：50条水平线，扫描结束时水平滑台回到与起点相同的一侧。
@@ -127,8 +127,8 @@ ZDT Emm命令中0和1分别代表两个电机旋转方向。方向和滑台的�
 ## 6. 软件安全行程
 
 ```c
-#define X_AXIS_MAX_SAFE_TRAVEL_MM  100UL
-#define Y_AXIS_MAX_SAFE_TRAVEL_MM  100UL
+#define X_AXIS_MAX_SAFE_TRAVEL_UM  100000UL
+#define Y_AXIS_MAX_SAFE_TRAVEL_UM  100000UL
 ```
 
 这两个数值是软件允许的最大相对运动范围，不是自动测量出来的机械限位。更换滑台后，应先实测安全行程，再修改这里。掩模版宽度或高度超过安全行程时，程序会直接编译失败。
@@ -209,10 +209,25 @@ ZDT Emm命令中0和1分别代表两个电机旋转方向。方向和滑台的�
 
 ## 11. 参数边界与到位判断
 
-宽度、高度、行距均使用正整数毫米；`UL` 是 C 的无符号长整型后缀，例如 `50UL`。当前配置不支持直接填写 `0.5` mm。正式范围受安全行程宏约束，测试工程仍采用表中固定的小行程；软件参数不能替代对实际剩余行程的检查。
+界面支持最多3位小数毫米，保存为整数微米，例如 `0.5 mm → 500UL`、`0.1 mm → 100UL`。不要把小数直接写进 `_UM` 宏。换算采用64位中间结果，命令脉冲和运行行号采用32位整数，并检查溢出。
+
+距离必须精确对应整数脉冲，不做静默舍入。默认200整步/圈、16细分、1000 μm/圈时，界面可设的最小正行距是 **0.005 mm（5 μm、16脉冲）**，宽度和行距必须是它的整数倍；高度必须能被行距整除。这是“整数微米输入”和“整数脉冲”共同决定的软件步长，**不是机械定位精度，也不是驱动器一脉冲的极限**。单脉冲理论位移仍为0.3125 μm；如需逐脉冲设置，需另行增加脉冲输入模式，不能把0.0003125 mm直接填入本界面。
+
+| 界面行距 | 固件 `SCAN_LINE_STEP_UM` | 默认硬件脉冲数 | 80 mm高度的行数 |
+|---:|---:|---:|---:|
+| 0.5 mm | 500UL | 1600 | 160 |
+| 0.1 mm | 100UL | 320 | 800 |
+| 0.05 mm | 50UL | 160 | 1600 |
+| 0.005 mm | 5UL | 16 | 16000 |
+
+例如宽80 mm、高80 mm、行距0.5 mm、速度2 mm/s，纯运动时间约107.3分钟；行距0.1 mm时约534分钟，此外每次移动至少两次500 ms状态轮询和300 ms换轴等待。小行距显著增加采集时间，不能用纯运动时间分行。请把实际行距同步填写到重构配置，保存逐行记录；光斑尺寸和机械回差仍会限制成像分辨率。
+
+正式范围受安全行程宏约束，1 mm和10 mm测试工程仍采用固定范围。首次验证小行距可以在正式工程填宽1 mm、高1 mm、行距0.1 mm，核对方向、10次Y步进与累计1 mm位移后再扩大范围。
 
 速度命令按整数 RPM 四舍五入，某些自定义速度会有量化误差。默认导程下，500、1000、2000 um/s 分别对应 30、60、120 RPM。`SCAN_ACCELERATION=0` 表示直接以设定速度启动；增加速度前需复核负载和运动稳定性。
 
-状态查询间隔为 500 ms。当前到位轮询需要观察到“未到位 → 到位”的变化，短行程高速运行可能在首次查询前完成，随后被判超时。先使用默认 1 mm/s 完成两级测试；提高速度后若实际已移动却报错 3/4，见[常见问题](troubleshooting.md)。
+状态查询间隔为500 ms。到位判断要求：本次收到接收确认 `FD 02` 或观察到未到位状态；经过该距离按实际命令转速计算的名义运动时间；连续两次查询到位。小运动即使在首次查询前结束，也可通过接收确认和两次状态查询完成等待。单独的 `FD 9F` 不再直接结束等待，丢失运动确认也不会重发相对运动命令。
+
+**两台驱动器的控制命令应答 Response 应设为 Receive（接收应答）或 Both（接收和到位应答）。** None/Reached 模式下，短运动可能既没有 `FD 02` 又来不及被观察到运动中，程序会超时报错3/4；这是证据不足时停止，不是自动假定运动成功。通讯仍使用现有固定0x6B校验，没有命令序号与实测位置核验；这次修改不证明偶发快速横移已解决。
 
 `RESET_MOTOR_COUNTERS_AT_START=0` 为默认值。设为 1 只清零驱动器内部位置计数，不执行机械回零。清零、地址设置等维护功能不属于更换掩模版所需操作。

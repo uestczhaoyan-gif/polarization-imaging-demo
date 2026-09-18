@@ -1,7 +1,7 @@
 """在主机上编译实际 C 函数，检查命令与故障响应；不连接电机。
 
 依赖 Python 和 gcc。HAL/时间/驱动反馈由测试桩模拟，不是硬件仿真。
-已知的提前到位风险用 REPRODUCED 输出，不代表修复或事发根因。
+覆盖小数距离、短运动和通信故障；不能认定偶发快速横移的根因。
 """
 from pathlib import Path
 import re
@@ -45,6 +45,19 @@ def main():
         cfile.write_text(code, encoding='utf-8')
         subprocess.run(['gcc', '-std=c99', '-Wall', '-Wextra', str(cfile), '-o', str(binary)], check=True)
         subprocess.run([str(binary)], check=True)
+        # Compile all stage configurations, and reject paths that would truncate.
+        for stage in range(4):
+            variant=re.sub(r'(#define SCAN_LINE_STEP_UM\s+)\d+UL',r'\g<1>5UL',config)
+            cfile.write_text(f'#define SCAN_STAGE {stage}U\n'+variant+'\nint main(void) { return 0; }',encoding='utf-8')
+            subprocess.run(['gcc','-std=c99','-Wall','-Wextra','-fsyntax-only',str(cfile)],check=True)
+        invalid=[('SCAN_LINE_STEP_UM',1),('MASK_SCAN_WIDTH_UM',100005),
+                 ('MASK_SCAN_HEIGHT_UM',99999),('SCAN_SPEED_UM_PER_SEC',1)]
+        for key,value in invalid:
+            variant=re.sub(r'(#define '+key+r'\s+)\d+UL',lambda m:m[1]+str(value)+'UL',config)
+            cfile.write_text(variant,encoding='utf-8')
+            result=subprocess.run(['gcc','-std=c99','-fsyntax-only',str(cfile)],capture_output=True)
+            assert result.returncode!=0,(key,value)
+        print('PASS: all four stages accept 0.005 mm; subpulse, travel, row division and zero RPM are compile-time errors.')
 
 
 if __name__ == '__main__':
