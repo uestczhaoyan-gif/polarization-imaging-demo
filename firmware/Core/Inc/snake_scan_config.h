@@ -29,6 +29,10 @@
  */
 #define SCAN_LINE_STEP_UM                  2000UL
 
+/* 0 = bidirectional serpentine; 1 = same-direction scan, return, then Y step.
+ * Return uses the same speed; every row including the last returns and steps Y. */
+#define SCAN_MODE                          0U
+
 /* 扫描线速度：1000 um/s = 1.000 mm/s。 */
 #define SCAN_SPEED_UM_PER_SEC              1000UL
 
@@ -160,6 +164,10 @@
 
 #if (MASK_SCAN_WIDTH_UM == 0UL)
 #error "MASK_SCAN_WIDTH_UM must be greater than zero"
+#endif
+
+#if (SCAN_MODE > 1U)
+#error "SCAN_MODE must be 0 (bidirectional) or 1 (unidirectional)"
 #endif
 
 #if (MASK_SCAN_HEIGHT_UM == 0UL)

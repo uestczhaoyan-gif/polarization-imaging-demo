@@ -1,5 +1,7 @@
 # Polarization Imaging Demo
 
+Choose bidirectional serpentine or unidirectional scanning in START.cmd. Unidirectional mode scans, returns at the same speed, then steps Y after every row, including the last. Exclude returns from reconstruction using explicit row windows; the mode does not control acquisition or add synchronized event logs. [Mode guide](docs/hardware/scan-modes.md)
+
 [中文](README.md) | **English**
 
 An STM32 drives an XY stage in a serpentine pattern, a source meter records current, and Python reconstructs a 2D image. The project includes firmware, a graphical parameter editor, two measured examples, and offline viewers linking each pixel to its raw samples.

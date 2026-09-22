@@ -21,6 +21,7 @@ class Field:
 
 
 FIELDS = [
+    Field('SCAN_MODE', '扫描模式', 0, 1),
     Field('MASK_SCAN_WIDTH_UM', '扫描宽度 / mm（最多3位小数）', 1, 4294000),
     Field('MASK_SCAN_HEIGHT_UM', '扫描高度 / mm（最多3位小数）', 1, 4294000),
     Field('SCAN_LINE_STEP_UM', '行距 / mm（最多3位小数）', 1, 4294000),
@@ -104,9 +105,13 @@ def validate(v):
     actual_speed_um = rpm * lead / 60
     if (max(w, 10000) * 60000 + rpm*lead-1) // (rpm*lead) + 20000 > 0xffffffff or (max(step, 2000) * 60000 + rpm*lead-1) // (rpm*lead) + 4000 > 0xffffffff:
         raise ValueError('运动超时超出32位计时器范围。')
-    return dict(minimum_step_mm=grid_um/1000, x_pulses=w*ppr//lead, y_pulses=step*ppr//lead, rows=h // step, rpm=rpm, actual_mm_s=rpm * lead / 60000,
+    mode = v['SCAN_MODE']
+    return dict(scan_mode=mode, mode_name='单向扫描' if mode else '双向蛇形',
+                return_passes=h//step if mode else 0,
+                final_x_mm=0 if mode or (h//step)%2==0 else w/1000,
+                minimum_step_mm=grid_um/1000, x_pulses=w*ppr//lead, y_pulses=step*ppr//lead, rows=h // step, rpm=rpm, actual_mm_s=rpm * lead / 60000,
                 last_line_y_mm=(h-step)/1000, final_y_mm=h/1000,
-                ideal_motion_seconds=(h // step * w + h) / actual_speed_um)
+                ideal_motion_seconds=(h // step * w * (2 if mode else 1) + h) / actual_speed_um)
 
 
 def render(source, values):

@@ -64,7 +64,8 @@ typedef enum
   SCAN_STATE_MOVING_X,
   SCAN_STATE_MOVING_Y,
   SCAN_STATE_FINISHED,
-  SCAN_STATE_ERROR
+  SCAN_STATE_ERROR,
+  SCAN_STATE_RETURNING_X
 } ScanState_t;
 
 /* Runtime state variables for scan progress and fault diagnosis. */
@@ -368,19 +369,32 @@ static void SnakeScan(void)
   for (pass = 0U; pass < ACTIVE_HORIZONTAL_PASS_COUNT; ++pass)
   {
     scan_line = pass + 1U;
-    x_direction = ((pass & 1U) == 0U) ? X_FIRST_PASS_DIRECTION
+    x_direction = ((SCAN_MODE == 1U) || ((pass & 1U) == 0U)) ? X_FIRST_PASS_DIRECTION
                                       : X_ALTERNATE_PASS_DIRECTION;
 
-    /* Alternate between the configured first-pass and return directions. */
+    /* Only this X leg is an imaging pass in unidirectional mode. */
     scan_state = SCAN_STATE_MOVING_X;
     if (!Scan_MoveRelative(X_AXIS_ADDR, x_direction,
                            ACTIVE_SCAN_WIDTH_UM, X_MOVE_TIMEOUT_MS))
     {
       Scan_Fail(3U);
     }
-    scan_x_offset_um = ((pass & 1U) == 0U) ?
+    scan_x_offset_um = ((SCAN_MODE == 1U) || ((pass & 1U) == 0U)) ?
                        ACTIVE_SCAN_WIDTH_UM : 0U;
     HAL_Delay(AXIS_SWITCH_DELAY_MS);
+
+    if (SCAN_MODE == 1U)
+    {
+      /* Nominal return, not mechanical homing. Do not image this leg. */
+      scan_state = SCAN_STATE_RETURNING_X;
+      if (!Scan_MoveRelative(X_AXIS_ADDR, X_ALTERNATE_PASS_DIRECTION,
+                             ACTIVE_SCAN_WIDTH_UM, X_MOVE_TIMEOUT_MS))
+      {
+        Scan_Fail(8U);
+      }
+      scan_x_offset_um = 0U;
+      HAL_Delay(AXIS_SWITCH_DELAY_MS);
+    }
 
     /* Every completed horizontal line is followed by one upward line step. */
     scan_state = SCAN_STATE_MOVING_Y;

@@ -77,6 +77,18 @@ class ConfigurationTests(unittest.TestCase):
                 self.assertEqual(info['minimum_step_mm'],0.005)
                 self.assertEqual(read_values(render(self.original,v)),v)
 
+    def test_modes_time_endpoints_and_roundtrip(self):
+        for mode,end_x in [(0,2),(1,0)]:
+            values=parse_form(dict(self.form,SCAN_MODE=str(mode),MASK_SCAN_WIDTH_UM='2',MASK_SCAN_HEIGHT_UM='2',SCAN_LINE_STEP_UM='2'))
+            # One row: 2 mm X + optional 2 mm return + 2 mm Y at 1 mm/s.
+            info=validate(values)
+            self.assertEqual(info['ideal_motion_seconds'],4 if mode==0 else 6)
+            self.assertEqual(info['final_x_mm'],end_x)
+            self.assertEqual(info['return_passes'],mode)
+            self.assertEqual(read_values(render(self.original,values)),values)
+        with self.assertRaises(ValueError):parse_form(dict(self.form,SCAN_MODE='2'))
+        with self.assertRaises(ValueError):read_values(self.original.replace(b'#define SCAN_MODE',b'// removed SCAN_MODE'))
+
     def test_subpulse_precision_division_and_more_than_65535_rows(self):
         for mm in ['0.001','0.003','0.0003125','0.015']:
             with self.subTest(mm=mm),self.assertRaises(ValueError):

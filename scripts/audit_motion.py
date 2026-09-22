@@ -58,6 +58,21 @@ def main():
             result=subprocess.run(['gcc','-std=c99','-fsyntax-only',str(cfile)],capture_output=True)
             assert result.returncode!=0,(key,value)
         print('PASS: all four stages accept 0.005 mm; subpulse, travel, row division and zero RPM are compile-time errors.')
+        path_stub=(ROOT/'scripts/scan_path_stub.c').read_text()
+        for mode in (0,1):
+            for rows in (1,2,3):
+                for direction in (0,1):
+                    variant=config
+                    for key,value in dict(SCAN_MODE=mode,MASK_SCAN_WIDTH_UM=500,
+                                          MASK_SCAN_HEIGHT_UM=rows*100,SCAN_LINE_STEP_UM=100,
+                                          X_FIRST_PASS_DIRECTION=direction,X_ALTERNATE_PASS_DIRECTION=1-direction,
+                                          Y_STEP_DIRECTION=direction).items():
+                        variant=re.sub(r'(#define '+key+r'\s+)\d+U(L?)',lambda m:m[1]+str(value)+'U'+m[2],variant)
+                    code=path_stub.replace('/* CONFIG */','#define SCAN_STAGE 3U\n'+variant)
+                    code=code.replace('/* LOOP */',function(source,'SnakeScan'))
+                    cfile.write_text(code,encoding='utf-8')
+                    subprocess.run(['gcc','-std=c99','-Wall','-Wextra',str(cfile),'-o',str(binary)],check=True)
+                    subprocess.run([str(binary)],check=True)
 
 
 if __name__ == '__main__':

@@ -11,6 +11,7 @@ from config_model import FIELDS, MM_DISPLAY_KEYS, parse_form, read_values, rende
 
 ROOT = Path(__file__).resolve().parents[1]
 HEADER = ROOT / 'firmware/Core/Inc/snake_scan_config.h'
+MODE_LABELS = ('双向蛇形（往返均成像）', '单向扫描（返回不成像）')
 
 
 def open_path(relative):
@@ -56,7 +57,9 @@ class ControlPanel(ttk.Frame):
                 ttk.Label(frame, text=field.label).grid(row=row*2, column=0, sticky='w', pady=(8, 2))
                 variable = tk.StringVar()
                 self.variables[field.key] = variable
-                if field.maximum == 1:
+                if field.key == 'SCAN_MODE':
+                    entry = ttk.Combobox(frame, textvariable=variable, values=MODE_LABELS, state='readonly', width=32)
+                elif field.maximum == 1:
                     entry = ttk.Combobox(frame, textvariable=variable, values=['0', '1'], state='readonly', width=32)
                 else:
                     entry = ttk.Entry(frame, textvariable=variable, width=35)
@@ -92,6 +95,10 @@ class ControlPanel(ttk.Frame):
 
     @staticmethod
     def form_value(key, value):
+        if key == 'SCAN_MODE':
+            if value not in (0, 1):
+                raise ValueError('SCAN_MODE 必须为0或1。')
+            return MODE_LABELS[value]
         return str(Decimal(value) / 1000) if key in MM_DISPLAY_KEYS else str(value)
 
     def reload(self):
@@ -107,7 +114,9 @@ class ControlPanel(ttk.Frame):
 
     def check(self):
         try:
-            values = parse_form({key: variable.get() for key, variable in self.variables.items()})
+            form = {key: variable.get() for key, variable in self.variables.items()}
+            form['SCAN_MODE'] = MODE_LABELS.index(form['SCAN_MODE'])
+            values = parse_form(form)
             new = render(self.original, values)
             info = validate(values)
             diff = ''.join(difflib.unified_diff(self.original.decode('utf-8-sig').splitlines(True),
@@ -116,7 +125,8 @@ class ControlPanel(ttk.Frame):
             self.preview.delete('1.0', 'end')
             self.preview.insert('1.0', diff or '参数与当前文件相同。')
             self.preview.config(state='disabled')
-            self.summary.set(f"正式扫描：{info['rows']} 行；最后横扫 Y={info['last_line_y_mm']} mm，末尾步进到 {info['final_y_mm']} mm。\n"
+            self.summary.set(f"{info['mode_name']}：{info['rows']} 行；返回 {info['return_passes']} 次；最终 X={info['final_x_mm']:g} mm。\n"
+                             f"最后横扫 Y={info['last_line_y_mm']} mm，末尾步进到 {info['final_y_mm']} mm。\n"
                              f"X 每次 {info['x_pulses']} 脉冲；Y 每次 {info['y_pulses']} 脉冲；可设距离增量 {info['minimum_step_mm']:g} mm。\n"
                              f"命令转速 {info['rpm']} RPM；换算速度 {info['actual_mm_s']:.4g} mm/s。\n"
                              f"仅匀速运动约 {info['ideal_motion_seconds']/60:.2f} 分钟，另加启动、通信、换轴与加减速时间。\n"
@@ -160,8 +170,8 @@ class ControlPanel(ttk.Frame):
 def main():
     root = tk.Tk()
     root.title('偏振成像演示 · 参数与实验')
-    root.geometry('1080x820')
-    root.minsize(980, 740)
+    root.geometry('1080x900')
+    root.minsize(980, 880)
     style = ttk.Style(root)
     if 'vista' in style.theme_names():
         style.theme_use('vista')
