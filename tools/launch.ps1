@@ -1,5 +1,5 @@
 # Windows launcher: resolve Python without machine-specific paths in the repo.
-param([switch]$CheckOnly)
+param([switch]$CheckOnly, [string]$LabProfile)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 $savedPath = Join-Path $projectRoot 'local\python-path.txt'
@@ -54,5 +54,9 @@ if ($CheckOnly) { Write-Output $pythonExecutable; exit 0 }
 New-Item -ItemType Directory -Force (Split-Path $savedPath -Parent) | Out-Null
 Set-Content -LiteralPath $savedPath -Value $pythonExecutable -Encoding UTF8
 Set-Location -LiteralPath $projectRoot
-& $pythonExecutable (Join-Path $PSScriptRoot 'control_panel.py')
+if ($LabProfile) {
+    & $pythonExecutable (Join-Path $PSScriptRoot 'lab_app.py') $LabProfile
+} else {
+    & $pythonExecutable (Join-Path $PSScriptRoot 'control_panel.py')
+}
 exit $LASTEXITCODE

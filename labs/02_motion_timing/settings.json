@@ -1,0 +1,5 @@
+{
+  "title": "02 运动事件与相对时间记录",
+  "scan": {"SCAN_MODE": 1, "MASK_SCAN_WIDTH_UM": 2000, "MASK_SCAN_HEIGHT_UM": 1000, "SCAN_LINE_STEP_UM": 500, "SCAN_SPEED_UM_PER_SEC": 1000},
+  "lab": {"LAB_EXPERIMENT": 1, "LAB_LOG_ENABLE": 1}
+}

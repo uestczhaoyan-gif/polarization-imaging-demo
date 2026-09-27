@@ -3,6 +3,8 @@ import difflib
 from decimal import Decimal
 from pathlib import Path
 import os
+import subprocess
+import sys
 import tkinter as tk
 from tkinter import messagebox, ttk
 from tkinter.scrolledtext import ScrolledText
@@ -41,6 +43,8 @@ class ControlPanel(ttk.Frame):
         tabs.add(examples, text='  实验与使用指南  ')
         self.make_config(config)
         self.make_examples(examples)
+        for folder,label in [('01_scan_modes','实验一：单向 / 双向扫描'),('02_motion_timing','实验二：运动事件与时间'),('03_stage_characterization','实验三：位移与平稳速度')]:
+            ttk.Button(examples,text=label,command=lambda f=folder: subprocess.Popen([sys.executable,str(ROOT/'tools/lab_app.py'),str(ROOT/'labs'/f/'settings.json')])).pack(anchor='w',pady=4)
         self.reload()
 
     def make_config(self, page):

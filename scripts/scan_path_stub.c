@@ -5,6 +5,14 @@
 #include <setjmp.h>
 #include <stdio.h>
 /* CONFIG */
+
+#define LAB_LOG_ENABLE 0
+#define Lab_Event(a,b) ((void)0)
+#define Lab_Context(a,b,c,d,e,f) ((void)0)
+#define Lab_Service() ((void)0)
+#define Lab_Aborted() false
+#define Lab_Delay HAL_Delay
+
 enum { SCAN_STATE_MOVING_X, SCAN_STATE_MOVING_Y, SCAN_STATE_RETURNING_X, SCAN_STATE_FINISHED };
 static unsigned scan_state, scan_line, scan_x_offset_um, scan_y_offset_um;
 static unsigned count, fail_at, error_code, led;

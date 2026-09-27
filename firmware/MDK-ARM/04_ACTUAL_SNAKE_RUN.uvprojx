@@ -409,6 +409,11 @@
               <FilePath>../Core/Src/main.c</FilePath>
             </File>
             <File>
+              <FileName>lab_io.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>../Core/Src/lab_io.c</FilePath>
+            </File>
+            <File>
               <FileName>snake_scan_config.h</FileName>
               <FileType>5</FileType>
               <FilePath>../Core/Inc/snake_scan_config.h</FilePath>

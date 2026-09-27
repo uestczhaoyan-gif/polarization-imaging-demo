@@ -1,6 +1,6 @@
 # Polarization Imaging Demo
 
-Choose bidirectional serpentine or unidirectional scanning in START.cmd. Unidirectional mode scans, returns at the same speed, then steps Y after every row, including the last. Exclude returns from reconstruction using explicit row windows; the mode does not control acquisition or add synchronized event logs. [Mode guide](docs/hardware/scan-modes.md)
+Choose bidirectional serpentine or unidirectional scanning in START.cmd. Unidirectional mode scans, returns at the same speed, then steps Y after every row, including the last. Exclude returns from reconstruction using explicit row windows; optional USART3 event logging is available; acquisition remains independent and post-processing is not hardware synchronization. [Mode guide](docs/hardware/scan-modes.md)
 
 [中文](README.md) | **English**
 
@@ -12,12 +12,22 @@ The current implementation provides single-channel current imaging. Acquisition 
 
 Download and extract the [complete project](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest).
 
-1. **Edit stage parameters:** double-click `START.cmd`, the single Windows entry point. Enter scan dimensions (including fractional line spacing such as 0.5 or 0.1 mm), speed and directions, preview the changes, then save. Rebuild and flash the appropriate Keil project afterward. [Editor guide](docs/hardware/configuration-ui.md)
+1. **Edit stage parameters:** double-click `START.cmd`, the main Windows entry point. Enter scan dimensions (including fractional line spacing such as 0.5 or 0.1 mm), speed and directions, preview the changes, then save. Rebuild and flash the appropriate Keil project afterward. [Editor guide](docs/hardware/configuration-ui.md)
 2. **View measurements:** choose a case in the workspace's experiments tab, or open a `viewer.html` from the table below. Viewing saved results does not require Python.
 3. **Prepare a measurement:** read the [wiring guide](docs/hardware/wiring-and-first-run.md) and [measurement checklist](docs/reconstruction/measurement.md). Save actual settings, timestamps and per-line motion events.
 4. **Review reconstruction:** start with the [core processing guide](docs/reconstruction/core-process.md), then run an example.
 
 The editor requires Python 3.10+ with Tkinter and no third-party packages. On macOS/Linux run `python tools/control_panel.py`. Download HTML viewers before opening them; GitHub does not execute them. Detailed documentation and the editor interface are in Chinese.
+
+## Three laboratory toolsets
+
+The experiments tab and [labs guide](labs/README.md) provide independent launchers and prepared source projects:
+
+1. [Scan-mode comparison](labs/01_scan_modes/README.md): unidirectional and bidirectional paths.
+2. [Motion timing](labs/02_motion_timing/README.md): MCU-to-laptop events, manual meter-time anchors and reconstruction row windows.
+3. [Stage characterization](labs/03_stage_characterization/README.md): finite round trips or incremental steps, measured-position sheets and conditional speed-trial analysis.
+
+Each toolset has an editable JSON profile, graphical launcher and independent project generator. Releases also provide three separate source packages. Logging requires an external **3.3 V USB-to-TTL adapter** on USART3 PB10/PB11 and Python `pyserial`; the board's USART1 is reserved for motor communication. No direct source-meter integration or hardware synchronization is implemented. Rebuild, flash and validate on your hardware before experiments. Command resolution is not measured accuracy; the fastest passing trial is not a certified maximum speed.
 
 ## Measured examples
 

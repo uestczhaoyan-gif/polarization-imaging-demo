@@ -15,6 +15,15 @@
 #define EMM_REPLY_REACHED 0x9FU
 #define EMM_CHECK_BYTE 0x6BU
 /* CONFIG */
+
+#define LAB_LOG_ENABLE 0
+#define Lab_Event(a,b) ((void)0)
+#define Lab_Context(a,b,c,d,e,f) ((void)0)
+#define Lab_Service() ((void)0)
+#define Lab_Aborted() false
+#define Lab_Delay HAL_Delay
+static unsigned move_id, scan_line, scan_state;
+
 int huart1;
 volatile uint8_t rxCmd[255], rxCount;
 volatile bool rxFrameFlag;

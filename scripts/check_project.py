@@ -21,7 +21,7 @@ def main():
             for name in (item.text or '').split(';'):
                 if name:assert (project.parent/name.replace('\\','/')).is_dir(),name
     count=0
-    for folder in [ROOT,ROOT/'docs',ROOT/'firmware',ROOT/'reconstruction',ROOT/'experiments',ROOT/'tools']:
+    for folder in [ROOT,ROOT/'docs',ROOT/'firmware',ROOT/'reconstruction',ROOT/'experiments',ROOT/'tools',ROOT/'labs']:
         docs=folder.glob('*.md') if folder==ROOT else folder.rglob('*.md')
         for p in docs:
             if any(part in ('outputs','.git','.mpl-cache','Drivers') for part in p.relative_to(ROOT).parts):continue

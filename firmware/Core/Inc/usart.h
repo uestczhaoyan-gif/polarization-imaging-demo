@@ -40,6 +40,7 @@ extern UART_HandleTypeDef huart1;
 
 #define		CMD_LEN		255
 
+extern __IO uint32_t rxDroppedCount;
 extern __IO bool rxFrameFlag;
 extern __IO uint8_t rxCmd[CMD_LEN];
 extern __IO uint8_t rxCount;

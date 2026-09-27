@@ -19,9 +19,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "usart.h"
+#include "lab_io.h"
 
 /* USER CODE BEGIN 0 */
 
+static uint8_t rxDma[CMD_LEN];
+__IO uint32_t rxDroppedCount = 0U;
 __IO bool rxFrameFlag = false;
 __IO uint8_t rxCmd[CMD_LEN] = {0};
 __IO uint8_t rxCount = 0;
@@ -166,7 +169,7 @@ HAL_StatusTypeDef UART1_StartReceiveToIdle(void)
 {
   HAL_StatusTypeDef result;
 
-  result = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, (uint8_t *)rxCmd, CMD_LEN);
+  result = HAL_UARTEx_ReceiveToIdle_DMA(&huart1, rxDma, CMD_LEN);
   if (result == HAL_OK)
   {
     /* A motor reply is only a few bytes; no half-buffer callback is needed. */
@@ -185,6 +188,10 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
       size = CMD_LEN;
     }
 
+    uint16_t i;
+    Lab_MotorRx(rxDma,size,HAL_GetTick());
+    if (rxFrameFlag) { ++rxDroppedCount; }
+    for (i=0U;i<size;++i) { rxCmd[i]=rxDma[i]; }
     rxCount = (uint8_t)size;
     rxFrameFlag = true;
 

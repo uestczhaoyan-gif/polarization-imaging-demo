@@ -27,6 +27,8 @@
 
 #include "Emm_V5.h"
 #include "snake_scan_config.h"
+#include "lab_config.h"
+#include "lab_io.h"
 
 /* USER CODE END Includes */
 
@@ -72,6 +74,7 @@ typedef enum
 volatile ScanState_t scan_state = SCAN_STATE_BOOT;
 volatile uint8_t scan_error = 0U;
 volatile uint32_t scan_line = 0U;
+static uint32_t move_id = 0U;
 volatile uint32_t scan_x_offset_um = 0U;
 volatile uint32_t scan_y_offset_um = 0U;
 
@@ -100,6 +103,7 @@ static void Scan_StartCountdown(void);
 static void Scan_ShowErrorForever(uint8_t error_code);
 static void Scan_Fail(uint8_t error_code);
 static void SnakeScan(void);
+static void Lab_AxisTest(void);
 
 /* USER CODE END PFP */
 
@@ -166,6 +170,8 @@ static bool Scan_WaitReply(uint8_t addr, uint8_t code, uint8_t *value,
 
   while ((uint32_t)(HAL_GetTick() - start_tick) < timeout_ms)
   {
+    Lab_Service();
+    if (Lab_Aborted()) { return false; }
     if (Scan_TakeRxFrame(frame, &length))
     {
       /* Search in case two short frames arrived in one DMA buffer. */
@@ -192,10 +198,12 @@ static bool Scan_ReadMotorStatus(uint8_t addr, uint8_t *status)
   for (attempt = 0U; attempt < MOTOR_COMM_RETRY_COUNT; ++attempt)
   {
     Scan_ClearRxFrame();
+    Lab_Event("STATUS_QUERY", addr);
     Emm_V5_Read_Sys_Params(addr, S_FLAG);
 
     if (Scan_WaitReply(addr, 0x3AU, status, MOTOR_REPLY_TIMEOUT_MS))
     {
+      Lab_Event("STATUS_REPLY", *status);
       return true;
     }
 
@@ -242,7 +250,8 @@ static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms,
 
   while ((uint32_t)(HAL_GetTick() - start_tick) < timeout_ms)
   {
-    HAL_Delay(STATUS_POLL_INTERVAL_MS);
+    Lab_Delay(LAB_LOG_ENABLE ? 50U : STATUS_POLL_INTERVAL_MS);
+    if (Lab_Aborted()) { return false; }
 
     if (Scan_ReadMotorStatus(addr, &status))
     {
@@ -279,7 +288,7 @@ static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
   bool reply_received;
   uint8_t reply;
   uint32_t pulses = (uint32_t)DISTANCE_PULSES(distance_um);
-  uint32_t sent_tick = HAL_GetTick();
+  uint32_t sent_tick;
   uint32_t nominal_ms = (uint32_t)MOVE_NOMINAL_MS(distance_um);
 
   if (pulses == 0U)
@@ -287,12 +296,19 @@ static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
     return false;
   }
 
+  Lab_Service();
+  if (Lab_Aborted()) { return false; }
+  Lab_Context(++move_id, scan_line, (uint32_t)scan_state, addr, direction, distance_um);
+  Lab_Event("MOVE_BEGIN", SCAN_SPEED_RPM);
+  sent_tick = HAL_GetTick();
   Scan_ClearRxFrame();
   Emm_V5_Pos_Control(addr, direction, SCAN_SPEED_RPM, SCAN_ACCELERATION,
                      pulses, 2U, false);
 
   reply_received = Scan_WaitReply(addr, 0xFDU, &reply,
                                   MOTOR_REPLY_TIMEOUT_MS);
+
+  Lab_Event(reply_received ? "ACK" : "ACK_TIMEOUT", reply_received ? reply : 0U);
 
   if (reply_received && (reply != EMM_REPLY_OK) &&
       (reply != EMM_REPLY_REACHED))
@@ -303,8 +319,13 @@ static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
   /* Receive/Both response mode is required for reliable short moves.
    * With no acknowledgement and no observed motion, stop on timeout rather
    * than assuming that an idle motor received the command. Never resend it. */
-  return Scan_WaitAxisReached(addr, timeout_ms, sent_tick, nominal_ms,
-                             reply_received && (reply == EMM_REPLY_OK));
+  if (!Scan_WaitAxisReached(addr, timeout_ms, sent_tick, nominal_ms,
+                           reply_received && (reply == EMM_REPLY_OK)))
+  { Lab_Event("MOVE_FAILED",0U); return false; }
+  Lab_Service();
+  if (Lab_Aborted()) { return false; }
+  Lab_Event("MOVE_END",0U);
+  return !Lab_Aborted();
 }
 
 /* Xiaozhi dual-USB board red status LED on PA1 is active-low. */
@@ -326,9 +347,11 @@ static void Scan_StartCountdown(void)
   for (i = 0U; i < SCAN_START_COUNTDOWN_SECONDS; ++i)
   {
     Scan_LedOn();
-    HAL_Delay(250U);
+    Lab_Delay(250U);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
     Scan_LedOff();
-    HAL_Delay(750U);
+    Lab_Delay(750U);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
   }
 }
 
@@ -357,6 +380,7 @@ static void Scan_Fail(uint8_t error_code)
   /* Broadcast immediate stop. Both axes retain holding torque. */
   Scan_ClearRxFrame();
   Emm_V5_Stop_Now(0U, false);
+  Lab_Event("FAIL", error_code);
   HAL_Delay(100U);
   Scan_ShowErrorForever(error_code);
 }
@@ -381,7 +405,8 @@ static void SnakeScan(void)
     }
     scan_x_offset_um = ((SCAN_MODE == 1U) || ((pass & 1U) == 0U)) ?
                        ACTIVE_SCAN_WIDTH_UM : 0U;
-    HAL_Delay(AXIS_SWITCH_DELAY_MS);
+    Lab_Delay(AXIS_SWITCH_DELAY_MS);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
 
     if (SCAN_MODE == 1U)
     {
@@ -393,7 +418,8 @@ static void SnakeScan(void)
         Scan_Fail(8U);
       }
       scan_x_offset_um = 0U;
-      HAL_Delay(AXIS_SWITCH_DELAY_MS);
+      Lab_Delay(AXIS_SWITCH_DELAY_MS);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
     }
 
     /* Every completed horizontal line is followed by one upward line step. */
@@ -404,10 +430,46 @@ static void SnakeScan(void)
       Scan_Fail(4U);
     }
     scan_y_offset_um += ACTIVE_LINE_STEP_UM;
-    HAL_Delay(AXIS_SWITCH_DELAY_MS);
+    Lab_Delay(AXIS_SWITCH_DELAY_MS);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
   }
 
   scan_state = SCAN_STATE_FINISHED;
+  Scan_LedOn();
+}
+
+static void Lab_AxisTest(void)
+{
+  uint32_t repeat;
+  uint8_t axis = LAB_TEST_AXIS ? Y_AXIS_ADDR : X_AXIS_ADDR;
+  uint8_t direction = LAB_TEST_AXIS ? Y_STEP_DIRECTION : X_FIRST_PASS_DIRECTION;
+  for (repeat=0U; repeat<LAB_TEST_REPEATS; ++repeat)
+  {
+    scan_line=repeat+1U;
+    scan_state=LAB_TEST_AXIS ? SCAN_STATE_MOVING_Y : SCAN_STATE_MOVING_X;
+    if (!Scan_MoveRelative(axis,direction,LAB_TEST_DISTANCE_UM,
+                          (uint32_t)MOVE_NOMINAL_MS(LAB_TEST_DISTANCE_UM)+20000U))
+    { Scan_Fail(10U); }
+    Lab_Delay(LAB_TEST_DWELL_MS);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
+    if (LAB_EXPERIMENT == 2U)
+    {
+      scan_state=SCAN_STATE_RETURNING_X; /* phase denotes return on either axis */
+      if (!Scan_MoveRelative(axis,(uint8_t)(1U-direction),LAB_TEST_DISTANCE_UM,
+                            (uint32_t)MOVE_NOMINAL_MS(LAB_TEST_DISTANCE_UM)+20000U))
+      { Scan_Fail(10U); }
+      Lab_Delay(LAB_TEST_DWELL_MS);
+      if (Lab_Aborted()) { Scan_Fail(9U); }
+    }
+  }
+  if (LAB_EXPERIMENT == 3U)
+  {
+    scan_state=SCAN_STATE_RETURNING_X;
+    if (!Scan_MoveRelative(axis,(uint8_t)(1U-direction),(uint32_t)LAB_TEST_RANGE_UM,
+                          (uint32_t)MOVE_NOMINAL_MS(LAB_TEST_RANGE_UM)+20000U))
+    { Scan_Fail(10U); }
+  }
+  scan_state=SCAN_STATE_FINISHED;
   Scan_LedOn();
 }
 
@@ -444,6 +506,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  Lab_Init();
   if (UART1_StartReceiveToIdle() != HAL_OK)
   {
     Error_Handler();
@@ -507,9 +570,13 @@ int main(void)
   }
   else
   {
+    if (LAB_LOG_ENABLE && !Lab_WaitStart()) { Scan_Fail(9U); }
+    Lab_Event("RUN_BEGIN", LAB_EXPERIMENT);
     scan_state = SCAN_STATE_START_DELAY;
     Scan_StartCountdown();
-    SnakeScan();
+    if ((LAB_EXPERIMENT >= 2U) && (SCAN_STAGE == 3U)) { Lab_AxisTest(); }
+    else { SnakeScan(); }
+    Lab_Event("RUN_END",0U);
   }
 
   /* USER CODE END 2 */
@@ -521,6 +588,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    Lab_Service();
   }
   /* USER CODE END 3 */
 }

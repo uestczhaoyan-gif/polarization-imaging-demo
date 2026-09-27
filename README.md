@@ -1,6 +1,6 @@
 # 偏振成像演示
 
-支持双向蛇形与单向扫描，可在START.cmd工作台切换。单向每行横扫后返回，再Y换行（最后一行也一样）；返回段不用于成像。模式不会自动控制源表或生成同步日志。[模式、时间与重构说明](docs/hardware/scan-modes.md)
+支持双向蛇形与单向扫描，可在START.cmd工作台切换。单向每行横扫后返回，再Y换行（最后一行也一样）；返回段不用于成像。可选 USART3 运动日志；源表仍独立采集，后处理对齐不等于硬件同步。[模式、时间与重构说明](docs/hardware/scan-modes.md)
 
 **中文** | [English](README.en.md)
 
@@ -12,12 +12,22 @@ STM32 控制双轴平移台做蛇形扫描，源表记录电流，Python 将采�
 
 下载 [完整项目包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/latest)，解压后：
 
-1. **修改电机参数**：双击唯一的启动入口 `START.cmd`。填写范围、速度和方向（支持0.5、0.1 mm等小数行距），检查预览后保存，再到 Keil 编译、下载。[界面使用说明](docs/hardware/configuration-ui.md)
+1. **修改电机参数**：双击主启动入口 `START.cmd`。填写范围、速度和方向（支持0.5、0.1 mm等小数行距），检查预览后保存，再到 Keil 编译、下载。[界面使用说明](docs/hardware/configuration-ui.md)
 2. **查看测量结果**：在工作台“实验与使用指南”页选择案例，打开交互结果；也可直接打开下表中的 `viewer.html`。查看结果不需要 Python。
 3. **开始新测量**：先读 [接线与首次运行](docs/hardware/wiring-and-first-run.md) 和 [测量记录清单](docs/reconstruction/measurement.md)，保留实际参数、时间戳与逐行运动记录。
 4. **理解或修改重构**：先看 [核心处理过程](docs/reconstruction/core-process.md)，再运行下面的示例。
 
 工作台需要 Python 3.10+（含 Tkinter），不需要安装第三方库；macOS/Linux 运行 `python tools/control_panel.py`。GitHub 不能直接执行交互 HTML，请下载后打开。
+
+## 三组可直接准备的实验
+
+工作台“实验与使用指南”提供三个独立入口，也可进入 [labs 实验说明](labs/README.md)：
+
+1. [单向/双向扫描对照](labs/01_scan_modes/README.md)：切换扫描路径，生成独立工程。
+2. [运动事件与相对时间](labs/02_motion_timing/README.md)：STM32→电脑事件日志、人工时间锚点、逐行窗口导出。
+3. [位移与平稳速度测试](labs/03_stage_characterization/README.md)：有限次数往返/阶梯位移，生成并分析实测记录表。
+
+每组都有 `settings.json`、可视化入口和独立工程生成器。发布页另附三个独立源码包。日志使用 USART3 PB10/PB11 和外接 **3.3 V USB-TTL**，需要 `pyserial`；不能直接占用正在控制电机的板载 USART1。所有代码均需按说明编译烧录后进行实机验证。
 
 ## 两个实测案例
 
@@ -33,7 +43,8 @@ STM32 控制双轴平移台做蛇形扫描，源表记录电流，Python 将采�
 ```text
 START.cmd                 Windows 统一工作台入口
 firmware/                 STM32 固件与四个 Keil 工程
-tools/                    参数界面与独立参数校验模块
+tools/                    参数界面、日志、时钟映射、平台实测分析
+labs/                     三组独立实验入口、参数与操作说明
 reconstruction/           Python 重构代码与测试
 experiments/
   tape-z/                 Z 字母：数据、配置、说明、结果
