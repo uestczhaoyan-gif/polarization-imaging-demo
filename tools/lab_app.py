@@ -50,7 +50,8 @@ class App:
                 profile.setdefault(group,{})[key]=int(v)
             out=ROOT/'local/lab-projects'/datetime.now().strftime('%Y%m%d-%H%M%S-%f')
             self.prepared=prepare(profile,out)
-            self.status.set('已生成（尚未烧录）：'+str(out)+'\n打开其中 firmware/MDK-ARM 工程，按说明编译下载。')
+            _,_,record=configuration(profile);derived=record['derived']
+            self.status.set('已生成（尚未烧录）：'+str(out)+'\n实际指令：'+str(derived['rpm'])+' RPM，'+f"{derived['actual_mm_s']:.6g}"+' mm/s；精确配置网格 '+str(derived['minimum_step_mm'])+' mm（非实测精度）。\n打开其中 firmware/MDK-ARM 工程，按说明编译下载。')
         except Exception as e:messagebox.showerror('未生成',str(e))
 
     def collect(self):

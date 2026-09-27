@@ -51,7 +51,7 @@ def analyze(events,rows,resolution,tolerance):
     config={e['event']:e['value'] for e in events};roundtrip=config['EXPERIMENT']==2
     adequate=roundtrip and len(expected)>=6 and bool(repeatability)
     passed=adequate and all_stable and max(abs(x) for x in errors)<=tolerance
-    return dict(experiment=config['EXPERIMENT'],commanded_mm_s=config['RPM']*config['LEAD_UM']/60000,
+    return dict(experiment=config['EXPERIMENT'],axis_address=expected[0]['axis'],commanded_mm_s=config['RPM']*config['LEAD_UM']/60000,
                 resolution_mm=resolution,tolerance_mm=tolerance,n_moves=len(rows),mean_error_mm=mean(errors),
                 max_abs_error_mm=max(abs(x) for x in errors),repeatability=repeatability,
                 measured_average_speeds_mm_s=speeds,observed_stable_all=all_stable,

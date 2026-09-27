@@ -1,0 +1,20 @@
+{
+  "trial_id": "填写独立编号",
+  "date": "",
+  "source_revision": "",
+  "flashed_project": "",
+  "axis": "X 或 Y",
+  "load_g": null,
+  "supply_v": null,
+  "mounting_and_lubrication": "",
+  "measurement_instrument": "",
+  "measurement_resolution_mm": null,
+  "calibration_and_uncertainty": "",
+  "position_tolerance_mm": null,
+  "stability_criterion": "无可见突跳/卡顿/异常声音；如有位置时间测量，预先填写速度波动容差",
+  "events_file": "",
+  "measurement_sheet": "",
+  "video_file": "",
+  "anomaly_times_and_move_ids": [],
+  "notes": "这是空模板，不是实测结果"
+}

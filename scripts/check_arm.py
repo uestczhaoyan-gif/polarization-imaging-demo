@@ -44,6 +44,8 @@ def main():
         lab=work/'firmware/Core/Inc/lab_config.h';original=lab.read_text()
         linker=work/'check.ld';linker.write_text(LINKER)
         startup=work/'firmware/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/gcc/startup_stm32f103xb.s'
+        # Bare-metal C has no constructors; Newlib still references these CRT hooks.
+        runtime=work/'crt_hooks.c';runtime.write_text('void _init(void) {}\nvoid _fini(void) {}\n')
         for experiment,stage in [(0,0),(0,3),(1,1),(1,3),(2,3),(3,3)]:
             text=re.sub(r'(#define LAB_EXPERIMENT\s+)\d+U',lambda m:m[1]+str(experiment)+'U',original)
             text=re.sub(r'(#define LAB_LOG_ENABLE\s+)\d+U',lambda m:m[1]+str(int(experiment!=0))+'U',text)
@@ -54,6 +56,8 @@ def main():
                 subprocess.run(['arm-none-eabi-gcc',*flags,f'-DSCAN_STAGE={stage}','-c',str(source),'-o',str(obj)],check=True)
             startobj=work/'startup.o';objects.append(str(startobj))
             subprocess.run(['arm-none-eabi-gcc','-mcpu=cortex-m3','-mthumb','-c',str(startup),'-o',str(startobj)],check=True)
+            crt=work/'crt.o';objects.append(str(crt))
+            subprocess.run(['arm-none-eabi-gcc','-mcpu=cortex-m3','-mthumb','-c',str(runtime),'-o',str(crt)],check=True)
             elf=work/'firmware.elf'
             subprocess.run(['arm-none-eabi-gcc','-mcpu=cortex-m3','-mthumb','--specs=nano.specs','--specs=nosys.specs',
                             '-nostartfiles','-Wl,--gc-sections','-T',str(linker),*objects,'-o',str(elf)],check=True)
