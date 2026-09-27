@@ -26,13 +26,15 @@ def read_events(path):
     if not data:raise ValueError('Empty event log')
     previous=None
     for item in data:
-        for k in EVENT_FIELDS:
-            if k!='event':item[k]=int(item[k])
+        validated=parse_event('E,'+','.join(str(item[k]) for k in EVENT_FIELDS))
+        item.update(validated)
         if previous is not None and item['seq']!=previous+1:
             raise ValueError('Event loss, duplicated frames or MCU reset; do not combine sessions')
         previous=item['seq']
         if item['event'] in ('FAIL','LOG_LOST','RX_LOST','MOVE_FAILED','ABORT_REQUEST'):
             raise ValueError('Fault/aborted log: retain raw file; not a complete valid scan')
+        if item['event']=='MOTOR_RX_DROPPED' and item['value']:
+            raise ValueError('Motor reply mailbox overwrite detected; inspect raw run, do not certify timing/position')
     if not any(x['event']=='RUN_BEGIN' for x in data) or not any(x['event']=='RUN_END' for x in data):
         raise ValueError('Missing RUN_BEGIN/RUN_END; run incomplete')
     return data

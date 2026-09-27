@@ -419,7 +419,7 @@ static void SnakeScan(void)
       }
       scan_x_offset_um = 0U;
       Lab_Delay(AXIS_SWITCH_DELAY_MS);
-    if (Lab_Aborted()) { Scan_Fail(9U); }
+      if (Lab_Aborted()) { Scan_Fail(9U); }
     }
 
     /* Every completed horizontal line is followed by one upward line step. */
@@ -576,6 +576,7 @@ int main(void)
     Scan_StartCountdown();
     if ((LAB_EXPERIMENT >= 2U) && (SCAN_STAGE == 3U)) { Lab_AxisTest(); }
     else { SnakeScan(); }
+    Lab_Event("MOTOR_RX_DROPPED", rxDroppedCount);
     Lab_Event("RUN_END",0U);
   }
 

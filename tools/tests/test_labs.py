@@ -75,11 +75,12 @@ class LabTests(unittest.TestCase):
             with self.assertRaises(ValueError):parse_event(text)
         with tempfile.TemporaryDirectory() as temp:
             p=Path(temp)/'events.csv'
-            for mutate in ('normal','gap','fault','truncated'):
+            for mutate in ('normal','gap','fault','truncated','mailbox'):
                 data=events()
                 if mutate=='gap':data.pop(7)
                 if mutate=='fault':data[8]['event']='FAIL'
                 if mutate=='truncated':data.pop()
+                if mutate=='mailbox':data[8].update(event='MOTOR_RX_DROPPED',value=1)
                 with p.open('w',newline='') as f:
                     w=csv.DictWriter(f,fieldnames=EVENT_FIELDS);w.writeheader();w.writerows(data)
                 if mutate=='normal':self.assertEqual(len(movements(read_events(p))),6)

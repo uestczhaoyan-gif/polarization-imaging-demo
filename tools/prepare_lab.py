@@ -45,14 +45,14 @@ def prepare(profile, output, root=ROOT):
     header,lab,record=configuration(profile,root)
     output=Path(output).resolve()
     # Reject destinations inside firmware/tools to avoid recursive copies.
-    for folder in ('firmware','tools','docs'):
+    included=('.github','firmware','tools','docs','labs','reconstruction','experiments','scripts')
+    for folder in included:
         if output.is_relative_to((root/folder).resolve()):raise ValueError('Choose local/lab-projects or another output directory')
     out=fresh_directory(output)
     ignore=shutil.ignore_patterns('__pycache__','*.pyc','Objects','Listings','Build_*','*.uvguix.*','*.uvoptx','build')
-    for folder in ('firmware','tools'):
-        shutil.copytree(root/folder,out/folder,ignore=ignore)
-    shutil.copytree(root/'labs',out/'labs',ignore=ignore)
-    for name in ('LICENSE','THIRD_PARTY_NOTICES.md'):
+    for folder in included:
+        if (root/folder).exists():shutil.copytree(root/folder,out/folder,ignore=ignore)
+    for name in ('LICENSE','README.en.md','.gitignore','.gitattributes'):
         if (root/name).exists():shutil.copy2(root/name,out/name)
     (out/'firmware/Core/Inc/snake_scan_config.h').write_bytes(header)
     (out/'firmware/Core/Inc/lab_config.h').write_text(lab,encoding='utf-8')

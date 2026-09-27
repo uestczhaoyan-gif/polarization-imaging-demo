@@ -43,7 +43,7 @@ def main():
     print('Logging to',folder.resolve())
     print('Open recorder BEFORE board reset. g starts; m <meter_seconds> records a manual time mark; q exits (! requests stop).')
     print('After RUN_END, record a final meter mark, wait for SYNC, then q. Never unplug motor cables powered.')
-    ready=False;running=False;last_seq=None;pending=None;last_ping=0.;finished=False;buffer=b'';boot_seen=False
+    ready=False;running=False;last_seq=None;pending=None;last_ping=0.;finished=False;buffer=b'';boot_seen=False;sync_count=0
     # Explicitly disable handshake lines before opening; separate USB-TTL only.
     port=serial.Serial(port=None,baudrate=115200,timeout=.05,write_timeout=1)
     port.dtr=False;port.rts=False;port.port=args.port
@@ -76,8 +76,12 @@ def main():
                     if event=='SYNC':
                         if pending is not None:
                             sync.writerow([e['mcu_ms']/1000,(pending+now)/2,pending,now,(now-pending)/2]);sf.flush();pending=None
+                            sync_count+=1
+                            if sync_count==1:print('First clock exchange saved. You may record a manual meter-time mark before starting.')
                             if finished:print('Post-run clock exchange saved. Record final meter mark, wait another 5 s, then q.')
                     if event in ('MOVE_BEGIN','MOVE_END','FAIL','RUN_END'):print(e)
+                    if event=='MOTOR_RX_DROPPED' and e['value']:
+                        manifest['motor_rx_dropped']=e['value'];print('WARNING: motor reply mailbox overwrite; retain raw data, inspect this run.')
                     if event=='RUN_BEGIN':running=True
                     if event=='RUN_END':manifest['complete']=True;finished=True;running=False
                     if event in ('FAIL','LOG_LOST','RX_LOST','MOVE_FAILED'):

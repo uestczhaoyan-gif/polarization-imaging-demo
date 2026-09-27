@@ -44,4 +44,4 @@
 
 运动顺序：`firmware/Core/Src/main.c` 的 `SnakeScan`、`Lab_AxisTest`；日志：`lab_io.c`；实验参数：`firmware/Core/Inc/lab_config.h`；独立工程生成：`tools/prepare_lab.py`；日志收集：`tools/collect_motion.py`。这些路径均相对当前包根目录。
 
-验证边界：自动测试覆盖软件路径、配置和日志分析，不能替代 Keil 实际下载、电气接线和平台机械测量。无直线位移传感器时，仍无法从日志恢复某次突然窜动的真实逐点轨迹。
+验证边界：[软件验证记录](validation.md)覆盖软件路径、配置和日志分析，不能替代 Keil 实际下载、电气接线和平台机械测量。无直线位移传感器时，仍无法从日志恢复某次突然窜动的真实逐点轨迹。
