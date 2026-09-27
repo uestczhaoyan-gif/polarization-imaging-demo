@@ -4,6 +4,11 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
+import types
+import queue
+import io
+from contextlib import redirect_stdout
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools'))
@@ -12,6 +17,7 @@ from prepare_lab import configuration,prepare
 from align_motion import make_windows,fit_anchors
 from analyze_stage import template,analyze
 from map_clocks import map_marks
+import collect_motion
 
 def events(experiment=1):
     result=[]
@@ -32,6 +38,37 @@ def events(experiment=1):
     return result
 
 class LabTests(unittest.TestCase):
+    def test_collector_with_fake_serial_never_touches_hardware(self):
+        data=events();split=next(i for i,e in enumerate(data) if e['event']=='RUN_BEGIN')
+        ready=dict(data[0],event='READY');data.insert(split,ready)
+        for i,e in enumerate(data):e['seq']=i
+        def wire(rows):return ''.join('E,'+','.join(str(e[k]) for k in EVENT_FIELDS)+'\r\n' for e in rows).encode()
+        boot=wire(data[:split+1]);motion=wire(data[split+1:]);writes=[]
+        class FakeSerial:
+            def __init__(self,**kwargs):self.is_open=False;self.buffer=boot
+            def open(self):self.is_open=True
+            def close(self):self.is_open=False
+            @property
+            def in_waiting(self):return len(self.buffer)
+            def read(self,n):chunk=self.buffer[:n];self.buffer=self.buffer[n:];return chunk
+            def write(self,value):
+                writes.append(value)
+                if value==b'G':self.buffer+=motion
+        serial=types.ModuleType('serial');serial.Serial=FakeSerial
+        serial_tools=types.ModuleType('serial.tools');serial_tools.list_ports=types.SimpleNamespace(comports=lambda:[])
+        for commands,success in ([('g',0),('q',1)],True),([('q',0)],False):
+            with tempfile.TemporaryDirectory() as temp:
+                out=Path(temp)/'session';q=queue.Queue()
+                for cmd in commands:q.put(cmd)
+                with patch.dict(sys.modules,{'serial':serial,'serial.tools':serial_tools}),patch.object(sys,'argv',['collect','--port','FAKE','--output',str(out)]),patch.object(collect_motion.queue,'Queue',return_value=q),patch.object(collect_motion.threading,'Thread'),redirect_stdout(io.StringIO()):
+                    if success:collect_motion.main()
+                    else:
+                        with self.assertRaises(SystemExit):collect_motion.main()
+                manifest=json.loads((out/'session.json').read_text(encoding='utf-8'))
+                self.assertEqual(manifest['complete'],success)
+                if success:self.assertEqual(len(movements(read_events(out/'events.csv'))),6)
+                else:self.assertEqual(writes[-1],b'!')
+
     def test_event_parser_and_loss_rejected(self):
         self.assertEqual(parse_event('E,0,10,BOOT,0,0,0,0,0,0,1')['mcu_ms'],10)
         for text in ('E,0,0','E,-1,10,BOOT,0,0,0,0,0,0,1','E,0,10,BOOT,0,0,0,0,0,0,NaN'):

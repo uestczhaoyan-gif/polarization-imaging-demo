@@ -54,7 +54,7 @@ def main():
             sync=csv.writer(sf);sync.writerow(['mcu_s','pc_mid_s','pc_send_s','pc_receive_s','half_rtt_s'])
             marks=csv.writer(mf);marks.writerow(['pc_monotonic_s','meter_s'])
             while True:
-                chunk=port.read(1024)
+                chunk=port.read(port.in_waiting or 1)
                 if chunk:buffer+=chunk
                 if len(buffer)>8192:raise ValueError('Serial line too long / wrong port or baud')
                 while b'\n' in buffer:
@@ -94,7 +94,8 @@ def main():
                     if cmd=='g':
                         if not boot_seen or not ready or running or finished:print('Need BOOT then READY, and only one start per reset. No command sent.')
                         elif pending is not None:print('Clock exchange pending; retry g shortly.')
-                        else:port.write(b'G');running=True
+                        else:
+                            port.write(b'G');running=True;last_ping=time.monotonic()
                 now=time.monotonic()
                 if pending is not None and now-pending>10:
                     raise TimeoutError('No clock reply in 10 s; no more sync requests to avoid mispairing a late reply')

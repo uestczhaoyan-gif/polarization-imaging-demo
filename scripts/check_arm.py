@@ -36,7 +36,8 @@ def main():
         project=work/'firmware/MDK-ARM/04_ACTUAL_SNAKE_RUN.uvprojx';tree=ET.parse(project)
         sources=[(project.parent/f.findtext('FilePath').replace('\\','/')).resolve()
                  for f in tree.findall('.//File') if f.findtext('FileType')=='1']
-        includes=[str((project.parent/p).resolve()) for p in tree.findtext('.//IncludePath').split(';')]
+        includes=sorted({str((project.parent/p.replace('\\','/')).resolve())
+                         for item in tree.findall('.//IncludePath') for p in (item.text or '').split(';') if p})
         flags=['-mcpu=cortex-m3','-mthumb','-std=c99','-Os','-ffunction-sections','-fdata-sections',
                '-DUSE_HAL_DRIVER','-DSTM32F103xB','-Wall','-Wextra','-Werror=implicit-function-declaration']
         for include in includes:flags+=['-I',include]
