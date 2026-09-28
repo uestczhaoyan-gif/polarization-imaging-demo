@@ -66,4 +66,4 @@ python tools/analyze_sweep.py --project . --measurements measurements.csv --reso
 python tools/analyze_sweep.py --project . --measurements measurements.csv --output report.json
 ```
 
-程序只汇总你的测量与观察，留空或未完成不算通过，不自动感知机械状态。旧版固定单档模式和 `analyze_stage.py` 仅保留兼容，本次使用 `analyze_sweep.py`。
+程序只汇总你的测量与观察，留空或未完成不算通过，不自动感知机械状态。报告中的最佳通过值是指令档位；位移试验另外列出各档实测平均步距与范围，报告时应同时给出，不能用名义位移替代实测值。旧版固定单档模式和 `analyze_stage.py` 仅保留兼容，本次使用 `analyze_sweep.py`。

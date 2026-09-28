@@ -27,6 +27,8 @@ def summarize(config,rows,resolution=None,tolerance=None):
             measured=[finite(r['measured_position_mm'],'实测位置不可空白') for r in group if r['phase']!='return']
             steps=[b-a for a,b in zip(measured,measured[1:])]
             result['measured_steps_mm']=steps
+            result['mean_measured_step_mm']=sum(steps)/len(steps)
+            result['measured_step_range_mm']=[min(steps),max(steps)]
             result['passed']=all(d>2*resolution and abs(d-level['actual_distance_mm'])<=tolerance for d in steps)
             result['criterion']='Every measured forward increment >2 instrument resolution units and within declared error tolerance; not a calibrated uncertainty certificate.'
         elif kind!='minimum_distance':result['passed']=complete and stable
@@ -35,6 +37,8 @@ def summarize(config,rows,resolution=None,tolerance=None):
     key='actual_distance_mm' if kind=='minimum_distance' else 'actual_speed_mm_s'
     selected=(max if kind=='maximum_speed' else min)((r[key] for r in good),default=None)
     return dict(kind=kind,levels=results,best_tested_passing_value=selected,unit='mm' if kind=='minimum_distance' else 'mm/s',
+                value_kind='commanded setting, not independently measured speed/displacement',
+                measurement_resolution_mm=resolution,step_error_tolerance_mm=tolerance,
                 notice='Only the tested settings under the recorded conditions. No automatic mechanical sensing; blanks/unfinished trials never pass. Repeat boundary levels and both axes.')
 
 def main():

@@ -18,7 +18,7 @@ FIELDS=[('axis','测试轴：0=X / 1=Y'),('xdir','X 去程方向：0/1'),('ydir'
 
 class StagePanel:
     def __init__(self,window,profile):
-        self.window=window;self.profile=copy.deepcopy(profile);self.entries={}
+        self.window=window;self.profile=copy.deepcopy(profile);self.entries={};self.widgets={}
         window.title('平台三项测试 · 离线自动分档');window.geometry('850x800')
         box=ttk.Frame(window,padding=16);box.pack(fill='both',expand=True)
         ttk.Label(box,text='只测试：最小有效位移、最低平稳速度、最高平稳速度',font=('',14)).grid(row=0,columnspan=2,sticky='w')
@@ -37,16 +37,24 @@ class StagePanel:
             var=tk.StringVar(value=str(initial[key]));self.entries[key]=var
             widget=ttk.Combobox(box,textvariable=var,values=['0','1'],state='readonly') if key in ('axis','xdir','ydir','logging') else ttk.Entry(box,textvariable=var)
             widget.grid(row=row,column=1,sticky='ew')
+            self.widgets[key]=widget
         row=len(FIELDS)+3
         ttk.Button(box,text='校验档位、生成独立工程与空白测量表',command=self.generate).grid(row=row,columnspan=2,pady=10)
         self.status=tk.StringVar(value='硬件导程、细分与加速度沿用主配置。方向须通过小行程检查确认。')
         ttk.Label(box,textvariable=self.status,wraplength=790).grid(row=row+1,columnspan=2,sticky='w',pady=8)
         box.columnconfigure(1,weight=1)
+        self.update_controls()
+
+    def update_controls(self):
+        displacement=LABELS[self.kind.get()]=='minimum_distance'
+        for key,enabled in [('distance',not displacement),('speed',displacement),('preload',displacement)]:
+            self.widgets[key].configure(state='normal' if enabled else 'disabled')
 
     def change_kind(self,event=None):
         defaults=DEFAULTS[LABELS[self.kind.get()]]
         self.entries['levels'].set(', '.join(defaults['levels']))
         self.entries['distance'].set(defaults['distance_mm']);self.entries['preload'].set(defaults['preload_mm'])
+        self.update_controls()
 
     def get_profile(self):
         p=copy.deepcopy(self.profile);kind=LABELS[self.kind.get()];e={k:v.get().strip() for k,v in self.entries.items()}
