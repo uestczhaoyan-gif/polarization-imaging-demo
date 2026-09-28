@@ -7,6 +7,9 @@ import numpy as np
 
 
 def write_outputs(data, output):
+    if data["metadata"]["config"].get("continuous_only", False):
+        from .continuous_report import write_outputs as continuous_outputs
+        return continuous_outputs(data, output)
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     meta, raw = data['metadata'], data['raw_current_A']

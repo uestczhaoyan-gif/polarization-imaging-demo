@@ -96,7 +96,16 @@ class ConfigurationTests(unittest.TestCase):
         v=parse_form(dict(self.form,MASK_SCAN_HEIGHT_UM='400',Y_AXIS_MAX_SAFE_TRAVEL_UM='400',SCAN_LINE_STEP_UM='0.005'))
         self.assertEqual(validate(v)['rows'],80000)
         v=parse_form(dict(self.form,MASK_SCAN_WIDTH_UM='80',MASK_SCAN_HEIGHT_UM='80',SCAN_LINE_STEP_UM='0.5',SCAN_SPEED_UM_PER_SEC='2'))
-        self.assertEqual(validate(v)['ideal_motion_seconds'],6440)
+        self.assertEqual(validate(v)['ideal_motion_seconds'],6480)
 
+
+    def test_independent_axis_speeds(self):
+        v=parse_form(dict(self.form,SCAN_SPEED_UM_PER_SEC='10',Y_SPEED_UM_PER_SEC='0.1'))
+        d=validate(v)
+        self.assertEqual((d['rpm'],d['y_rpm']),(600,6))
+        self.assertEqual(d['actual_y_mm_s'],0.1)
+        self.assertEqual(read_values(render(self.original,v)),v)
+        with self.assertRaises(ValueError):
+            parse_form(dict(self.form,Y_SPEED_UM_PER_SEC='0.001'))
 
 if __name__=='__main__':unittest.main()

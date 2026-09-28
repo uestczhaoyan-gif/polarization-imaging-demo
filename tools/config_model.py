@@ -25,7 +25,8 @@ FIELDS = [
     Field('MASK_SCAN_WIDTH_UM', '扫描宽度 / mm（最多3位小数）', 1, 4294000),
     Field('MASK_SCAN_HEIGHT_UM', '扫描高度 / mm（最多3位小数）', 1, 4294000),
     Field('SCAN_LINE_STEP_UM', '行距 / mm（最多3位小数）', 1, 4294000),
-    Field('SCAN_SPEED_UM_PER_SEC', '线速度 / mm/s（最多3位小数）', 1, 71582788),
+    Field('SCAN_SPEED_UM_PER_SEC', 'X 扫描速度 / mm/s（最多3位小数）', 1, 71582788),
+    Field('Y_SPEED_UM_PER_SEC', 'Y 换行速度 / mm/s（最多3位小数）', 1, 71582788),
     Field('X_FIRST_PASS_DIRECTION', 'X 首行方向：0=CW，1=CCW', 0, 1),
     Field('Y_STEP_DIRECTION', 'Y 步进方向：0=CW，1=CCW', 0, 1),
     Field('X_AXIS_MAX_SAFE_TRAVEL_UM', 'X 可用安全行程 / mm', 1, 4294000),
@@ -38,7 +39,7 @@ FIELDS = [
     Field('SCAN_ACCELERATION', '协议加速度值（0=无加减速曲线）', 0, 255, '硬件参数'),
     Field('SCAN_START_COUNTDOWN_SECONDS', '启动倒计时 / 秒', 0, 255, '硬件参数'),
 ]
-MM_DISPLAY_KEYS = {f.key for f in FIELDS if f.key.endswith('_UM')} | {'SCAN_SPEED_UM_PER_SEC'}
+MM_DISPLAY_KEYS = {f.key for f in FIELDS if f.key.endswith('_UM')} | {'SCAN_SPEED_UM_PER_SEC', 'Y_SPEED_UM_PER_SEC'}
 KEYS = [f.key for f in FIELDS] + ['X_ALTERNATE_PASS_DIRECTION']
 
 
@@ -102,16 +103,22 @@ def validate(v):
     rpm = (speed * 60 + lead // 2) // lead
     if not 1 <= rpm <= 3000:
         raise ValueError('换算转速必须处于1～3000 RPM。')
+    y_speed = v['Y_SPEED_UM_PER_SEC']
+    y_rpm = (y_speed * 60 + lead // 2) // lead
+    if y_speed * 60 + lead // 2 > 0xffffffff or not 1 <= y_rpm <= 3000:
+        raise ValueError('Y 转速换算必须处于1～3000 RPM，且不能溢出。')
     actual_speed_um = rpm * lead / 60
-    if (max(w, 10000) * 60000 + rpm*lead-1) // (rpm*lead) + 20000 > 0xffffffff or (max(step, 2000) * 60000 + rpm*lead-1) // (rpm*lead) + 4000 > 0xffffffff:
+    actual_y_um = y_rpm * lead / 60
+    if (max(w, 10000) * 60000 + rpm*lead-1) // (rpm*lead) + 20000 > 0xffffffff or (max(step, 2000) * 60000 + y_rpm*lead-1) // (y_rpm*lead) + 4000 > 0xffffffff:
         raise ValueError('运动超时超出32位计时器范围。')
     mode = v['SCAN_MODE']
     return dict(scan_mode=mode, mode_name='单向扫描' if mode else '双向蛇形',
                 return_passes=h//step if mode else 0,
                 final_x_mm=0 if mode or (h//step)%2==0 else w/1000,
                 minimum_step_mm=grid_um/1000, x_pulses=w*ppr//lead, y_pulses=step*ppr//lead, rows=h // step, rpm=rpm, actual_mm_s=rpm * lead / 60000,
+                y_rpm=y_rpm, actual_y_mm_s=actual_y_um/1000,
                 last_line_y_mm=(h-step)/1000, final_y_mm=h/1000,
-                ideal_motion_seconds=(h // step * w * (2 if mode else 1) + h) / actual_speed_um)
+                ideal_motion_seconds=h // step * w * (2 if mode else 1) / actual_speed_um + h / actual_y_um)
 
 
 def render(source, values):

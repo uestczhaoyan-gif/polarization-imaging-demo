@@ -1,0 +1,59 @@
+{
+  "input_file": "raw/current.xls",
+  "input_format": "legacy",
+  "point_base": "auto",
+  "mode": "index_windows",
+  "continuous_only": true,
+  "width_mm": 50,
+  "line_step_mm": 2,
+  "columns": 25,
+  "row_windows_csv": "estimated-row-windows.csv",
+  "title": "光强分级扫描：连续电流保留强度变化",
+  "short_title": "Bi | 50 mm | pitch 2 mm | X 5 mm/s",
+  "reported_start_wait_seconds": 14.99,
+  "reported_motion_seconds": 347.2,
+  "rows": 25,
+  "x_speed_mm_s": 5,
+  "y_speed_mm_s": 5,
+  "unidirectional": false,
+  "turnaround_anchor_source_indices": [
+    1959.1933428306904,
+    4094.40044159684,
+    6011.251034838594,
+    7715.322723597649,
+    9437.056793748727,
+    11157.556121266472,
+    12877.162694965493,
+    14657.664676875109,
+    16477.39658393326,
+    18613.62663936278,
+    20710.68328522174,
+    22886.272197504022,
+    25022.59497657464
+  ],
+  "anchor_method": "broad far-edge current plateaus, not measured motion events; reviewed/extrapolated tail anchors",
+  "interpretation_notes": [
+    "行窗口由远端宽电流平台估计；平台中心不等于实测到位时刻。每对扫描行内暂按等采样速度映射。",
+    "秒表仅作平均行时长约束，不将积分设置0.1作为采样间隔。",
+    "末端缺乏对比度的窗口含外推；不校正光斑、探测器迟滞或机械窜动。",
+    "用户确认开始计时标记有误差，结束读数可能含额外等待；平均行时长及停留比例均为近似。"
+  ],
+  "light_source_percent_sequence": [
+    20,
+    40,
+    60,
+    50,
+    30
+  ],
+  "rows_per_intensity": 4,
+  "output_dir": "results",
+  "color_limits_uA": [
+    0,
+    1450
+  ],
+  "timing_evidence_status": "user confirmed start mark approximately indicates motion start; end may include extra waiting",
+  "phase_offset_mm": 0,
+  "anchor_review_notes": "last anchor extrapolated from previous three intervals; final plateau lacks a unique maximum",
+  "light_protocol": "start at first hollow-region row, change every four rows; tape-covered top/bottom keep a fixed setting, per operator",
+  "operator_observation": "no pause while present; occasional brief absence; no motion event log"
+}

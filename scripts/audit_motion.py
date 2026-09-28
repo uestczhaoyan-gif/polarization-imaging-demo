@@ -51,7 +51,7 @@ def main():
             cfile.write_text(f'#define SCAN_STAGE {stage}U\n'+variant+'\nint main(void) { return 0; }',encoding='utf-8')
             subprocess.run(['gcc','-std=c99','-Wall','-Wextra','-fsyntax-only',str(cfile)],check=True)
         invalid=[('SCAN_LINE_STEP_UM',1),('MASK_SCAN_WIDTH_UM',100005),
-                 ('MASK_SCAN_HEIGHT_UM',99999),('SCAN_SPEED_UM_PER_SEC',1)]
+                 ('MASK_SCAN_HEIGHT_UM',99999),('SCAN_SPEED_UM_PER_SEC',1),('Y_SPEED_UM_PER_SEC',1),('Y_SPEED_UM_PER_SEC',100000)]
         for key,value in invalid:
             variant=re.sub(r'(#define '+key+r'\s+)\d+UL',lambda m:m[1]+str(value)+'UL',config)
             cfile.write_text(variant,encoding='utf-8')

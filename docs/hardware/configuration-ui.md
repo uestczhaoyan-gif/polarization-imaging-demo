@@ -38,3 +38,6 @@ v3.1起距离宏从 `_MM` 改为 `_UM`，数值放大1000倍。旧版本的备�
 - [control_panel.py](../../tools/control_panel.py)：界面与实验导航。
 - [config_model.py](../../tools/config_model.py)：独立参数校验、最小文本修改、备份与保存。
 - [参数测试](../../tools/tests/test_config_model.py)：参数边界、外部修改冲突、备份和文件保真。
+
+
+X扫描速度与Y换行速度已分开输入。[独立速度与时间估计](independent-axis-speeds.md)。

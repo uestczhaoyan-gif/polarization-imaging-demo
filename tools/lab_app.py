@@ -12,7 +12,8 @@ from prepare_lab import ROOT,prepare,configuration
 
 FIELDS=[('scan','SCAN_MODE','扫描：0 双向 / 1 单向',1),
         ('scan','MASK_SCAN_WIDTH_UM','宽度 mm',1000),('scan','MASK_SCAN_HEIGHT_UM','高度 mm',1000),
-        ('scan','SCAN_LINE_STEP_UM','行距 mm',1000),('scan','SCAN_SPEED_UM_PER_SEC','速度 mm/s',1000),
+        ('scan','Y_SPEED_UM_PER_SEC','Y 速度 mm/s',1000),
+        ('scan','SCAN_LINE_STEP_UM','行距 mm',1000),('scan','SCAN_SPEED_UM_PER_SEC','X 速度 mm/s',1000),
         ('scan','X_FIRST_PASS_DIRECTION','X 去程：0 CW / 1 CCW',1),('scan','Y_STEP_DIRECTION','Y 去程：0 CW / 1 CCW',1),
         ('scan','X_AXIS_MAX_SAFE_TRAVEL_UM','X 当前可用行程 mm',1000),('scan','Y_AXIS_MAX_SAFE_TRAVEL_UM','Y 当前可用行程 mm',1000),
         ('lab','LAB_EXPERIMENT','实验：0 扫描 / 1 日志扫描 / 2 往返 / 3 阶梯',1),

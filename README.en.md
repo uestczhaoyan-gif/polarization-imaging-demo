@@ -4,9 +4,13 @@ Choose bidirectional serpentine or unidirectional scanning in START.cmd. Unidire
 
 [中文](README.md) | **English**
 
-An STM32 drives an XY stage in a serpentine pattern, a source meter records current, and Python reconstructs a 2D image. The project includes firmware, a graphical parameter editor, two measured examples, and offline viewers linking each pixel to its raw samples.
+An STM32 drives an XY stage in a serpentine pattern, a source meter records current, and Python reconstructs a 2D image. The project includes firmware, a graphical parameter editor, measured examples, and offline viewers linking each pixel to its raw samples.
 
 The current implementation provides single-channel current imaging. Acquisition uses the instrument software; motor–meter synchronization and Stokes/polarization calculations are not implemented.
+
+## September 28 experiments and independent axis speeds
+
+Five measured cases now include complete raw traces, continuous-current maps, offline pixel-to-sample viewers, and per-experiment presentation notes. See the [experiment guide](experiments/2026-09-28/README.md) and [X/Y speed guide](docs/hardware/independent-axis-speeds.md). Row windows are inferred from current plateaus, not synchronized position records. X scan/return and Y row-step speeds are independently configurable. Reported speed trials are not calibrated measurements.
 
 ## Start here
 

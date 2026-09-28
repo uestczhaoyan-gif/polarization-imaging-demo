@@ -32,6 +32,10 @@ def main():
                 assert (p.parent/link.split('#')[0]).exists(),(p,link)
                 count+=1
     results=ROOT/'experiments'
+    session=results/'2026-09-28'
+    for line in (session/'manifest.sha256').read_text(encoding='utf-8').splitlines():
+        digest,name=line.split('  ',1)
+        assert hashlib.sha256((session/name).read_bytes()).hexdigest()==digest,name
     for line in (results/'manifest.sha256').read_text().splitlines():
         digest,name=line.split('  ',1)
         assert hashlib.sha256((results/name).read_bytes()).hexdigest()==digest,name

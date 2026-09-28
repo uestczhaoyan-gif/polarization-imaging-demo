@@ -170,10 +170,13 @@ def aggregate(raw, edges, reverse, threshold, minimum=1):
             result['median_A'][r,c] = np.median(samples)
             result['mean_A'][r,c] = samples.mean()
             result['std_A'][r,c] = samples.std()
-            result['high_fraction'][r,c] = (samples >= threshold).mean()
+            result['high_fraction'][r,c] = (samples >= threshold).mean() if threshold is not None else 0
             result['limits'][r,c] = a,b
             result['sample_row'][a:b], result['sample_col'][a:b] = r,c
-    result['binary'] = (result['median_A'] >= threshold).astype(np.uint8)
+    if threshold is not None:
+        result['binary'] = (result['median_A'] >= threshold).astype(np.uint8)
+    else:
+        del result['high_fraction']
     return result
 
 
@@ -191,13 +194,16 @@ def reconstruct(config_path):
         raise ValueError('first_row_reverse 必须是 JSON 布尔值。')
     raw, points, labels, times, meta = load_measurements(config_path.parent/cfg['input_file'], cfg)
     value = cfg.get('threshold_uA')
-    threshold = otsu_threshold(raw) if value is None else float(value)*1e-6
-    if not np.isfinite(threshold) or not raw.min() < threshold < raw.max():
+    continuous = cfg.get('continuous_only', False)
+    if continuous and cfg['mode'] == 'estimate':
+        raise ValueError('continuous_only 需要显式行窗口或 constant，不能使用基于阈值的自动拟合。')
+    threshold = None if continuous else (otsu_threshold(raw) if value is None else float(value)*1e-6)
+    if threshold is not None and (not np.isfinite(threshold) or not raw.min() < threshold < raw.max()):
         raise ValueError('阈值必须位于原始电流最小值与最大值之间。')
     edges, reverse, timing = build_edges(raw, times, cfg, config_path.parent, threshold)
     result = aggregate(raw, edges, reverse, threshold, cfg.get('minimum_samples_per_pixel',1))
     counts = np.diff(result['limits'], axis=2).ravel()
-    fraction = result['high_fraction']
+    fraction = result.get('high_fraction', np.array([]))
     notes = ['坐标为给定宽度和行距下的相对坐标，未校准绝对位置或光斑尺寸。',
              '每行按均匀空间分箱，要求有效横扫窗口内速度恒定；尚不支持编码器轨迹重采样。']
     if cfg['mode'] == 'estimate':
@@ -211,7 +217,7 @@ def reconstruct(config_path):
     meta.update(timing)
     meta.update(config=cfg, version=__version__, python=platform.python_version(),
                 numpy=np.__version__, scipy=scipy.__version__, threshold_A=threshold,
-                complete_rows=result['binary'].shape[0], columns=cfg['columns'],
+                complete_rows=result['median_A'].shape[0], columns=cfg['columns'],
                 points_used=int((result['sample_row']>=0).sum()),
                 points_excluded=int((result['sample_row']<0).sum()),
                 points_per_pixel_min=int(counts.min()), points_per_pixel_max=int(counts.max()),

@@ -1,0 +1,355 @@
+{
+  "encoding": "gb18030",
+  "point_base": 8,
+  "sha256": "957cd90bc43bffb4fd556372d9e463ad4936b777aff5a0c90872df734c48c297",
+  "input_points": 30473,
+  "source_index_definition": "zero-based numerical record index; stop exclusive",
+  "time_source": "unavailable",
+  "mode": "index_windows",
+  "window_domain": "source_index",
+  "windows": [
+    [
+      2061.0,
+      2453.0
+    ],
+    [
+      2686.0,
+      3078.0
+    ],
+    [
+      3312.0,
+      3704.0
+    ],
+    [
+      3938.0,
+      4330.0
+    ],
+    [
+      4563.0,
+      4955.0
+    ],
+    [
+      5185.0,
+      5564.0
+    ],
+    [
+      5790.0,
+      6169.0
+    ],
+    [
+      6374.0,
+      6684.0
+    ],
+    [
+      6868.0,
+      7178.0
+    ],
+    [
+      7362.0,
+      7671.0
+    ],
+    [
+      7855.0,
+      8164.0
+    ],
+    [
+      8348.0,
+      8657.0
+    ],
+    [
+      8842.0,
+      9151.0
+    ],
+    [
+      9335.0,
+      9644.0
+    ],
+    [
+      9828.0,
+      10137.0
+    ],
+    [
+      10322.0,
+      10631.0
+    ],
+    [
+      10815.0,
+      11124.0
+    ],
+    [
+      11309.0,
+      11618.0
+    ],
+    [
+      11802.0,
+      12112.0
+    ],
+    [
+      12296.0,
+      12606.0
+    ],
+    [
+      12790.0,
+      13100.0
+    ],
+    [
+      13284.0,
+      13594.0
+    ],
+    [
+      13779.0,
+      14088.0
+    ],
+    [
+      14272.0,
+      14582.0
+    ],
+    [
+      14766.0,
+      15075.0
+    ],
+    [
+      15260.0,
+      15569.0
+    ],
+    [
+      15753.0,
+      16062.0
+    ],
+    [
+      16246.0,
+      16555.0
+    ],
+    [
+      16739.0,
+      17047.0
+    ],
+    [
+      17232.0,
+      17541.0
+    ],
+    [
+      17725.0,
+      18034.0
+    ],
+    [
+      18218.0,
+      18527.0
+    ],
+    [
+      18711.0,
+      19020.0
+    ],
+    [
+      19215.0,
+      19558.0
+    ],
+    [
+      19763.0,
+      20107.0
+    ],
+    [
+      20323.0,
+      20702.0
+    ],
+    [
+      20928.0,
+      21307.0
+    ],
+    [
+      21534.0,
+      21913.0
+    ],
+    [
+      22140.0,
+      22519.0
+    ],
+    [
+      22747.0,
+      23129.0
+    ],
+    [
+      23357.0,
+      23740.0
+    ],
+    [
+      23964.0,
+      24336.0
+    ],
+    [
+      24557.0,
+      24928.0
+    ],
+    [
+      25157.0,
+      25553.0
+    ],
+    [
+      25790.0,
+      26186.0
+    ],
+    [
+      26422.0,
+      26818.0
+    ],
+    [
+      27055.0,
+      27451.0
+    ],
+    [
+      27688.0,
+      28084.0
+    ],
+    [
+      28320.0,
+      28716.0
+    ],
+    [
+      28952.0,
+      29349.0
+    ]
+  ],
+  "row_windows_sha256": "90cfa60b14edbb5d8e5c94eee9596a387af17941266e445351eed54fb4055bc7",
+  "directions": [
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse",
+    "forward",
+    "reverse"
+  ],
+  "config": {
+    "input_file": "raw/current.xls",
+    "input_format": "legacy",
+    "point_base": "auto",
+    "mode": "index_windows",
+    "continuous_only": true,
+    "width_mm": 50.0,
+    "line_step_mm": 1.0,
+    "columns": 50,
+    "row_windows_csv": "estimated-row-windows.csv",
+    "title": "较大行距快速扫描：时间更短，竖向采样更稀",
+    "short_title": "Bi | 50 mm | pitch 1 mm | X 10 mm/s",
+    "reported_start_wait_seconds": 27.69,
+    "reported_motion_seconds": 399.09,
+    "rows": 50,
+    "x_speed_mm_s": 10,
+    "y_speed_mm_s": 10,
+    "unidirectional": false,
+    "turnaround_anchor_source_indices": [
+      2569.483687301253,
+      3821.098289747308,
+      5071.827530092534,
+      6281.732388180042,
+      7270.23708106532,
+      8255.964681472195,
+      9243.021919779598,
+      10229.46683521929,
+      11216.650956334815,
+      12203.921563319047,
+      13192.18605809642,
+      14180.25796940251,
+      15167.716323376597,
+      16153.760381830212,
+      17139.36587865848,
+      18126.321433809728,
+      19112.035830340785,
+      20209.640262485762,
+      21420.288696024458,
+      22632.558787936858,
+      23853.559125708416,
+      25039.16468918747,
+      26303.764487017754,
+      27569.655525181173,
+      28834.342265065752
+    ],
+    "anchor_method": "broad far-edge current plateaus, not measured motion events; reviewed/extrapolated tail anchors",
+    "interpretation_notes": [
+      "行窗口由远端宽电流平台估计；平台中心不等于实测到位时刻。每对扫描行内暂按等采样速度映射。",
+      "秒表仅作平均行时长约束，不将积分设置0.1作为采样间隔。",
+      "末端缺乏对比度的窗口含外推；不校正光斑、探测器迟滞或机械窜动。",
+      "用户确认开始计时标记有误差，结束读数可能含额外等待；平均行时长及停留比例均为近似。"
+    ],
+    "output_dir": "results",
+    "color_limits_uA": [
+      0,
+      650
+    ],
+    "timing_evidence_status": "user confirmed start mark approximately indicates motion start; end may include extra waiting",
+    "phase_offset_mm": 0,
+    "anchor_review_notes": "50 or 25 broad far-edge plateaus detected; no manual anchor edits"
+  },
+  "version": "1.1.0",
+  "python": "3.14.6",
+  "numpy": "2.4.6",
+  "scipy": "1.18.0",
+  "threshold_A": null,
+  "complete_rows": 50,
+  "columns": 50,
+  "points_used": 17242,
+  "points_excluded": 13231,
+  "points_per_pixel_min": 6,
+  "points_per_pixel_max": 8,
+  "mixed_pixels_fraction_02_to_08": 0,
+  "first_used_source_index": 2061,
+  "reported_start_wait_seconds_approx": 27.69,
+  "time_axis_available": false,
+  "notes": [
+    "坐标为给定宽度和行距下的相对坐标，未校准绝对位置或光斑尺寸。",
+    "每行按均匀空间分箱，要求有效横扫窗口内速度恒定；尚不支持编码器轨迹重采样。",
+    "按点数等分像素，要求有效窗口内采样间隔均匀；有非均匀时间戳请用 time_windows。",
+    "无时间轴：积分时间和约数启动等待不会被换算成采样间隔。",
+    "行窗口由远端宽电流平台估计；平台中心不等于实测到位时刻。每对扫描行内暂按等采样速度映射。",
+    "秒表仅作平均行时长约束，不将积分设置0.1作为采样间隔。",
+    "末端缺乏对比度的窗口含外推；不校正光斑、探测器迟滞或机械窜动。",
+    "用户确认开始计时标记有误差，结束读数可能含额外等待；平均行时长及停留比例均为近似。"
+  ],
+  "color_limits_uA": [
+    0,
+    650
+  ]
+}

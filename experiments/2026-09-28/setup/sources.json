@@ -1,0 +1,17 @@
+{
+  "target-50mm.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\50H50W图案.jpg",
+  "light-source-50mm.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\光源.jpg",
+  "aotf-settings-50mm.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\光源上位机.jpg",
+  "stopwatch-pitch-0p5-speed-1.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\双向扫描成像5050H0.5V1.jpg",
+  "stopwatch-pitch-0p5-speed-10.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\双向扫描成像5050H0.5V10.jpg",
+  "stopwatch-pitch-1-speed-10.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\双向扫描成像5050H1V10.jpg",
+  "sourcemeter-settings-50mm.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\源表上位机.jpg",
+  "start-position-50mm.jpg": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\起点定位.jpg",
+  "firmware-settings-speed-10.png": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10\\配置V10-机械振动和晃动更大，且Y轴运动过快，要分离.png",
+  "aotf-settings-80mm.jpg": "单向扫描成像8080 H2 V1\\光源上位机配置.jpg",
+  "light-source-80mm.jpg": "单向扫描成像8080 H2 V1\\光源配置.jpg",
+  "stopwatch-unidirectional-80mm.jpg": "单向扫描成像8080 H2 V1\\时间记录.jpg",
+  "sourcemeter-settings-80mm.jpg": "单向扫描成像8080 H2 V1\\源表上位机配置.jpg",
+  "start-position-80mm.jpg": "单向扫描成像8080 H2 V1\\起点8080.jpg",
+  "stopwatch-intensity-steps.jpg": "电流梯度成像5050 H2 V5-4行一换 2-4-6-5-3\\双向电流梯度成像5050 H2 V5.jpg"
+}

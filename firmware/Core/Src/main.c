@@ -340,7 +340,7 @@ static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
                               uint32_t distance_um, uint32_t timeout_ms)
 {
   return Scan_MoveCommand(addr,direction,(uint32_t)DISTANCE_PULSES(distance_um),
-                          SCAN_SPEED_RPM,timeout_ms);
+                          AXIS_SPEED_RPM(addr),timeout_ms);
 }
 
 /* Xiaozhi dual-USB board red status LED on PA1 is active-low. */
@@ -463,7 +463,7 @@ static void Lab_AxisTest(void)
     scan_line=repeat+1U;
     scan_state=LAB_TEST_AXIS ? SCAN_STATE_MOVING_Y : SCAN_STATE_MOVING_X;
     if (!Scan_MoveRelative(axis,direction,LAB_TEST_DISTANCE_UM,
-                          (uint32_t)MOVE_NOMINAL_MS(LAB_TEST_DISTANCE_UM)+20000U))
+                          0U))
     { Scan_Fail(10U); }
     Lab_Delay(LAB_TEST_DWELL_MS);
     if (Lab_Aborted()) { Scan_Fail(9U); }
@@ -471,7 +471,7 @@ static void Lab_AxisTest(void)
     {
       scan_state=SCAN_STATE_RETURNING_X; /* phase denotes return on either axis */
       if (!Scan_MoveRelative(axis,(uint8_t)(1U-direction),LAB_TEST_DISTANCE_UM,
-                            (uint32_t)MOVE_NOMINAL_MS(LAB_TEST_DISTANCE_UM)+20000U))
+                            0U))
       { Scan_Fail(10U); }
       Lab_Delay(LAB_TEST_DWELL_MS);
       if (Lab_Aborted()) { Scan_Fail(9U); }
@@ -481,7 +481,7 @@ static void Lab_AxisTest(void)
   {
     scan_state=SCAN_STATE_RETURNING_X;
     if (!Scan_MoveRelative(axis,(uint8_t)(1U-direction),(uint32_t)LAB_TEST_RANGE_UM,
-                          (uint32_t)MOVE_NOMINAL_MS(LAB_TEST_RANGE_UM)+20000U))
+                          0U))
     { Scan_Fail(10U); }
   }
   scan_state=SCAN_STATE_FINISHED;

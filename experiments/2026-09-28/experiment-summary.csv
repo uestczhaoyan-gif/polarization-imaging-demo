@@ -1,0 +1,6 @@
+﻿case,mode,width_mm,pitch_mm,x_set_mm_s,y_set_mm_s,rows,raw_samples,stopwatch_second_segment_s,samples_per_pixel_min,samples_per_pixel_max
+bidirectional-50mm-pitch-0p5mm-speed-10mmps,双向,50,0.5,10,10,100,57654,789.72,3,5
+bidirectional-50mm-pitch-0p5mm-speed-1mmps,双向,50,0.5,1,1,100,423146,5338.34,38,41
+bidirectional-50mm-pitch-1mm-speed-10mmps,双向,50,1,10,10,50,30473,399.09,6,8
+intensity-steps-50mm-pitch-2mm-speed-5mmps,双向,50,2,5,5,25,30430,347.2,24,32
+unidirectional-80mm-pitch-2mm-speed-1mmps,单向,80,2,1,1,40,537602,6700.17,155,164

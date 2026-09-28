@@ -20,7 +20,7 @@ static bool Scan_MoveRelative(uint8_t axis,uint8_t dir,uint32_t distance,uint32_
     assert(axis==(LAB_TEST_AXIS?Y_AXIS_ADDR:X_AXIS_ADDR));
     assert(dir==(returning?1-forward:forward));
     assert(distance==LAB_TEST_DISTANCE_UM*((LAB_EXPERIMENT==3 && returning)?LAB_TEST_REPEATS:1));
-    assert(timeout==(uint32_t)MOVE_NOMINAL_MS(distance)+20000U);
+    assert(timeout==0U);
     assert(scan_state==(returning?SCAN_STATE_RETURNING_X:(LAB_TEST_AXIS?SCAN_STATE_MOVING_Y:SCAN_STATE_MOVING_X)));
     ++count;
     if (count==fail_at) return false;

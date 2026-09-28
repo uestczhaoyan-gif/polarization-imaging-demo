@@ -75,6 +75,10 @@ int main(void) {
     assert(moves==1 && queries>80 && tick>=finish);
     assert(memcmp(last_move,expected,13)==0);
     puts("PASS: 2 mm/s = 120 RPM; one 100 mm command; no midline speed command.");
+    reset(0);
+    assert(Scan_MoveRelative(Y_AXIS_ADDR,1,1000,5000));
+    assert(last_move[0]==Y_AXIS_ADDR && last_move[3]==0 && last_move[4]==60);
+    puts("PASS: Y retains 1 mm/s (60 RPM) while X is 2 mm/s (120 RPM).");
     reset(1);
     assert(Scan_MoveRelative(2,1,100000,70000)); assert(moves==1 && tick>=finish);
     puts("PASS: missing acknowledgement does not resend the movement.");

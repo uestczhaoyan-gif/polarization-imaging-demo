@@ -33,8 +33,11 @@
  * Return uses the same speed; every row including the last returns and steps Y. */
 #define SCAN_MODE                          0U
 
-/* 扫描线速度：1000 um/s = 1.000 mm/s。 */
+/* X 横扫及单向回程速度：1000 um/s = 1.000 mm/s。 */
 #define SCAN_SPEED_UM_PER_SEC              1000UL
+
+/* Y 换行速度独立设置，不随 X 改变。 */
+#define Y_SPEED_UM_PER_SEC                 1000UL
 
 /*
  * 电机方向原始值：0=CW，1=CCW。
@@ -139,6 +142,13 @@
 #define DISTANCE_PULSES(um) \
         ((1ULL * (um) * MOTOR_PULSES_PER_REV) / LEAD_UM_PER_REV)
 /* Nominal duration rounded up, using the integer RPM actually sent. */
+#define AXIS_NOMINAL_MS(um, rpm) \
+        ((1ULL * (um) * 60000ULL + (rpm) * LEAD_UM_PER_REV - 1ULL) / \
+         (1ULL * (rpm) * LEAD_UM_PER_REV))
+#define Y_SPEED_RPM \
+        (((Y_SPEED_UM_PER_SEC * 60UL) + (LEAD_UM_PER_REV / 2UL)) / LEAD_UM_PER_REV)
+#define AXIS_SPEED_RPM(addr) ((addr) == Y_AXIS_ADDR ? Y_SPEED_RPM : SCAN_SPEED_RPM)
+
 #define MOVE_NOMINAL_MS(um) \
         ((1ULL * (um) * 60000ULL + SCAN_SPEED_RPM * LEAD_UM_PER_REV - 1ULL) / \
          (1ULL * SCAN_SPEED_RPM * LEAD_UM_PER_REV))
@@ -156,7 +166,7 @@
 #define X_MOVE_TIMEOUT_MS                   \
         (MOVE_NOMINAL_MS(ACTIVE_SCAN_WIDTH_UM) + 20000UL)
 #define Y_MOVE_TIMEOUT_MS                   \
-        (MOVE_NOMINAL_MS(ACTIVE_LINE_STEP_UM) + 4000UL)
+        (AXIS_NOMINAL_MS(ACTIVE_LINE_STEP_UM, Y_SPEED_RPM) + 4000UL)
 
 /* ========================================================================== */
 /* 5. 编译期安全检查：参数不合理时直接阻止生成固件                            */
@@ -223,6 +233,13 @@
 #error "The selected stage must contain at least one horizontal pass"
 #endif
 
+#if (Y_SPEED_UM_PER_SEC == 0UL || Y_SPEED_RPM == 0UL || Y_SPEED_RPM > 3000UL)
+#error "Y speed must convert to 1..3000 RPM"
+#endif
+#if ((1ULL * Y_SPEED_UM_PER_SEC * 60UL + LEAD_UM_PER_REV / 2UL) > 0xFFFFFFFFULL)
+#error "Y speed conversion exceeds supported range"
+#endif
+
 #if (SCAN_SPEED_RPM == 0UL)
 #error "Configured linear speed rounds to 0 RPM"
 #endif
@@ -257,7 +274,7 @@
 #error "Mechanical or speed conversion exceeds supported range"
 #endif
 #if ((MOVE_NOMINAL_MS(MASK_SCAN_WIDTH_UM) + 20000ULL > 0xFFFFFFFFULL) || \
-     (MOVE_NOMINAL_MS(SCAN_LINE_STEP_UM) + 4000ULL > 0xFFFFFFFFULL) || \
+     (AXIS_NOMINAL_MS(SCAN_LINE_STEP_UM, Y_SPEED_RPM) + 4000ULL > 0xFFFFFFFFULL) || \
      (X_MOVE_TIMEOUT_MS > 0xFFFFFFFFULL) || (Y_MOVE_TIMEOUT_MS > 0xFFFFFFFFULL))
 #error "Motion timeout exceeds the 32-bit timer"
 #endif

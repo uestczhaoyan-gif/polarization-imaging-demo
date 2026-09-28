@@ -132,7 +132,7 @@ class ControlPanel(ttk.Frame):
             self.summary.set(f"{info['mode_name']}：{info['rows']} 行；返回 {info['return_passes']} 次；最终 X={info['final_x_mm']:g} mm。\n"
                              f"最后横扫 Y={info['last_line_y_mm']} mm，末尾步进到 {info['final_y_mm']} mm。\n"
                              f"X 每次 {info['x_pulses']} 脉冲；Y 每次 {info['y_pulses']} 脉冲；可设距离增量 {info['minimum_step_mm']:g} mm。\n"
-                             f"命令转速 {info['rpm']} RPM；换算速度 {info['actual_mm_s']:.4g} mm/s。\n"
+                             f"X {info['rpm']} RPM / {info['actual_mm_s']:.4g} mm/s；Y {info['y_rpm']} RPM / {info['actual_y_mm_s']:.4g} mm/s。\n"
                              f"仅匀速运动约 {info['ideal_motion_seconds']/60:.2f} 分钟，另加启动、通信、换轴与加减速时间。\n"
                              '1 mm / 10 mm 测试工程使用各自固定范围；这里预览的是正式扫描。')
             self.save_button.config(state='normal' if new != self.original else 'disabled')
@@ -156,8 +156,9 @@ class ControlPanel(ttk.Frame):
             messagebox.showerror('未保存', str(error))
 
     def make_examples(self, page):
-        ttk.Label(page, text='两个实测案例分别保存原始数据、参数、说明和完整结果。', font=('Microsoft YaHei UI', 12)).pack(anchor='w', pady=(0, 18))
-        for title, folder, viewer in [('胶带 Z 字母 · 环境光测量', 'tape-z', 'results/viewer.html'),
+        ttk.Label(page, text='实测案例保存原始数据、参数、说明和完整结果。', font=('Microsoft YaHei UI', 12)).pack(anchor='w', pady=(0, 18))
+        for title, folder, viewer in [('0928 · 五组连续电流实验', '2026-09-28', 'index.html'),
+                                      ('胶带 Z 字母 · 环境光测量', 'tape-z', 'results/viewer.html'),
                                       ('矩形胶带框 · 暗环境测量', 'tape-frame', 'results/anchored/viewer.html'),
                                       ('合成数据 · 已知答案验证', 'synthetic', 'results/viewer.html')]:
             box = ttk.LabelFrame(page, text=title, padding=14)
