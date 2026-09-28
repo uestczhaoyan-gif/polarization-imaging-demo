@@ -21,3 +21,5 @@ experiments/*/results/** -text whitespace=cr-at-eol
 experiments/*/results/**/*.svg -diff whitespace=-blank-at-eol,cr-at-eol
 experiments/*/results/**/viewer.html -diff
 experiments/*/results/**/sample_to_pixel.csv -diff
+`n# Freeze source bytes and result manifests for the nested September session.
+experiments/2026-09-28/** -text whitespace=cr-at-eol
