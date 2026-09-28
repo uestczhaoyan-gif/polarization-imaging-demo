@@ -9,8 +9,12 @@ import shutil
 import subprocess
 import tempfile
 import xml.etree.ElementTree as ET
+import sys
+import json
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'tools'))
+from prepare_lab import configuration
 LINKER='''ENTRY(Reset_Handler)
 MEMORY { FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 64K
          RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 20K }
@@ -46,9 +50,19 @@ def main():
         startup=work/'firmware/Drivers/CMSIS/Device/ST/STM32F1xx/Source/Templates/gcc/startup_stm32f103xb.s'
         # Bare-metal C has no constructors; Newlib still references these CRT hooks.
         runtime=work/'crt_hooks.c';runtime.write_text('void _init(void) {}\nvoid _fini(void) {}\n')
-        for experiment,stage in [(0,0),(0,3),(1,1),(1,3),(2,3),(3,3)]:
+        combinations=[(0,0,0),(0,3,0),(1,1,1),(1,3,1),(2,3,1),(3,3,1)]
+        combinations += [(kind,3,logging) for kind in (4,5,6) for logging in (0,1)]
+        combinations += [(4,0,0),(4,1,0),(4,2,0)]
+        for experiment,stage,logging in combinations:
             text=re.sub(r'(#define LAB_EXPERIMENT\s+)\d+U',lambda m:m[1]+str(experiment)+'U',original)
-            text=re.sub(r'(#define LAB_LOG_ENABLE\s+)\d+U',lambda m:m[1]+str(int(experiment!=0))+'U',text)
+            text=re.sub(r'(#define LAB_LOG_ENABLE\s+)\d+U',lambda m:m[1]+str(logging)+'U',text)
+            if experiment>=4:
+                kind={4:'minimum_distance',5:'minimum_speed',6:'maximum_speed'}[experiment]
+                profile=json.loads((ROOT/'labs/03_stage_characterization/presets'/f'{kind}.json').read_text())
+                profile['lab']['LAB_LOG_ENABLE']=logging
+                header,text,record=configuration(profile)
+                (work/'firmware/Core/Inc/snake_scan_config.h').write_bytes(header)
+                (work/'firmware/Core/Inc/lab_sweep_config.h').write_text(record['_sweep_header'])
             lab.write_text(text)
             objects=[]
             for i,source in enumerate(sources):
@@ -61,7 +75,7 @@ def main():
             elf=work/'firmware.elf'
             subprocess.run(['arm-none-eabi-gcc','-mcpu=cortex-m3','-mthumb','--specs=nano.specs','--specs=nosys.specs',
                             '-nostartfiles','-Wl,--gc-sections','-T',str(linker),*objects,'-o',str(elf)],check=True)
-            print(f'PASS: Cortex-M3 link experiment={experiment} stage={stage}, 64K FLASH / 20K RAM with 2K reserve',flush=True)
+            print(f'PASS: Cortex-M3 link experiment={experiment} stage={stage} logging={logging}, 64K FLASH / 20K RAM with 2K reserve',flush=True)
             subprocess.run(['arm-none-eabi-size',str(elf)],check=True)
 
 if __name__=='__main__':main()

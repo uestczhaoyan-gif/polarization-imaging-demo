@@ -62,6 +62,12 @@ class App:
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('profile',nargs='?',type=Path,default=ROOT/'labs/01_scan_modes/settings.json');args=p.parse_args()
-    window=tk.Tk();App(window,json.loads(args.profile.read_text(encoding='utf-8-sig')));window.mainloop()
+    profile=json.loads(args.profile.read_text(encoding='utf-8-sig'))
+    window=tk.Tk()
+    if 'sweep' in profile:
+        from stage_panel import StagePanel
+        StagePanel(window,profile)
+    else:App(window,profile)
+    window.mainloop()
 
 if __name__=='__main__':main()

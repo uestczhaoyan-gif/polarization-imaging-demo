@@ -1,5 +1,5 @@
 {
-  "title": "03 最小有效位移、最低/最高平稳速度",
+  "title": "03 maximum_speed",
   "scan": {
     "SCAN_MODE": 0,
     "MASK_SCAN_WIDTH_UM": 1000,
@@ -8,7 +8,7 @@
     "SCAN_SPEED_UM_PER_SEC": 1000
   },
   "lab": {
-    "LAB_EXPERIMENT": 4,
+    "LAB_EXPERIMENT": 6,
     "LAB_LOG_ENABLE": 0,
     "LAB_TEST_AXIS": 0,
     "LAB_TEST_DISTANCE_UM": 1000,
@@ -16,20 +16,16 @@
     "LAB_TEST_DWELL_MS": 5000
   },
   "sweep": {
-    "kind": "minimum_distance",
+    "kind": "maximum_speed",
     "stage_pause_ms": 5000,
     "levels": [
-      "0.1",
-      "0.05",
-      "0.02",
-      "0.01",
-      "0.005",
-      "0.0025",
-      "0.00125",
-      "0.000625",
-      "0.0003125"
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
     ],
-    "distance_mm": "1",
-    "preload_mm": "0.2"
+    "distance_mm": "10",
+    "preload_mm": "0"
   }
 }

@@ -39,7 +39,7 @@ def main():
     for archive in sorted(out.glob('*.zip')):
         digest=hashlib.sha256(archive.read_bytes()).hexdigest();sums.append(digest+'  '+archive.name)
     (out/'SHA256SUMS.txt').write_text('\n'.join(sums)+'\n',encoding='ascii')
-    (out/'交付说明.md').write_text('# '+args.version+' 实验包\n\n代码提交：`'+commit+'`\n\n完整项目：'+prefix+'。三个数字开头的目录可独立编译；各有 START.cmd 和 README.md。\n\n先读任意实验包的 labs/README.md。实验二、三需要外接 3.3V USB-TTL（PB10→RX、PB11←TX、GND），并安装 pyserial。\n\n所有包是源代码；没有伪称已烧录的 HEX，也没有生成虚假的实测结果。精度与最高平稳速度需按说明测量。\n',encoding='utf-8')
+    (out/'交付说明.md').write_text('# '+args.version+' 实验包\n\n代码提交：`'+commit+'`\n\n完整项目：'+prefix+'。三个数字开头的目录可独立编译；各有 START.cmd 和 README.md。\n\n先读任意实验包的 labs/README.md。实验二及其他主动开启日志的配置需要外接 3.3V USB-TTL（PB10→RX、PB11←TX、GND），并安装 pyserial。\n\n所有包是源代码；没有伪称已烧录的 HEX，也没有生成虚假的实测结果。精度与最高平稳速度需按说明测量。\n',encoding='utf-8')
     print(out)
 
 if __name__=='__main__':main()

@@ -25,7 +25,7 @@ The experiments tab and [labs guide](labs/README.md) provide independent launche
 
 1. [Scan-mode comparison](labs/01_scan_modes/README.md): unidirectional and bidirectional paths.
 2. [Motion timing](labs/02_motion_timing/README.md): MCU-to-laptop events, manual meter-time anchors and reconstruction row windows.
-3. [Stage characterization](labs/03_stage_characterization/README.md): finite round trips or incremental steps, measured-position sheets and conditional speed-trial analysis.
+3. [Stage characterization](labs/03_stage_characterization/README.md): automatic finite sweeps for minimum effective displacement and minimum/maximum stable speed; offline by default, with measurement sheets and observation-based summaries.
 
 Each toolset has an editable JSON profile, graphical launcher and independent project generator. Releases also provide three separate source packages. Logging requires an external **3.3 V USB-to-TTL adapter** on USART3 PB10/PB11 and Python `pyserial`; the board's USART1 is reserved for motor communication. No direct source-meter integration or hardware synchronization is implemented. Rebuild, flash and validate on your hardware before experiments. Command resolution is not measured accuracy; the fastest passing trial is not a certified maximum speed.
 

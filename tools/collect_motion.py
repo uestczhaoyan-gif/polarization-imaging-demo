@@ -28,7 +28,7 @@ def main():
               'complete':False,'source_meter_connected':False,'clock':'PC monotonic; MCU HAL_GetTick ms',
               'warnings':['Motor arrival receipt is not exact physical position/time.']}
     if args.project:
-        for name in ('snake_scan_config.h','lab_config.h'):
+        for name in ('snake_scan_config.h','lab_config.h','lab_sweep_config.h'):
             src=args.project/'firmware/Core/Inc'/name
             (folder/name).write_bytes(src.read_bytes());manifest[name+'_sha256']=sha(src)
     write_json(folder/'session.json',manifest)

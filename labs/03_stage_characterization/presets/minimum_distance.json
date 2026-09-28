@@ -1,5 +1,5 @@
 {
-  "title": "03 最小有效位移、最低/最高平稳速度",
+  "title": "03 minimum_distance",
   "scan": {
     "SCAN_MODE": 0,
     "MASK_SCAN_WIDTH_UM": 1000,

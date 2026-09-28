@@ -23,12 +23,12 @@ def configuration(profile, root=ROOT):
     for key,value in profile.get('lab',{}).items():
         if key not in lab or type(value) is not int:raise ValueError('Invalid lab parameter: '+key)
         lab[key]=value
-    if lab['LAB_EXPERIMENT'] not in range(4) or lab['LAB_LOG_ENABLE'] not in (0,1) or lab['LAB_TEST_AXIS'] not in (0,1):
+    if lab['LAB_EXPERIMENT'] not in range(7) or lab['LAB_LOG_ENABLE'] not in (0,1) or lab['LAB_TEST_AXIS'] not in (0,1):
         raise ValueError('Invalid experiment, logging or axis')
-    if lab['LAB_EXPERIMENT'] and not lab['LAB_LOG_ENABLE']:raise ValueError('Experiments 1–3 require logging and PC start')
+    if lab['LAB_EXPERIMENT']==1 and not lab['LAB_LOG_ENABLE']:raise ValueError('Timing experiment requires logging and PC start')
     n=lab['LAB_TEST_REPEATS'];d=lab['LAB_TEST_DISTANCE_UM']
     if not 1<=n<=1000 or not 0<=lab['LAB_TEST_DWELL_MS']<=60000:raise ValueError('Repetitions 1–1000; dwell 0–60000 ms')
-    if lab['LAB_EXPERIMENT']>=2:
+    if lab['LAB_EXPERIMENT'] in (2,3):
         total=d*(n if lab['LAB_EXPERIMENT']==3 else 1)
         safe=values['Y_AXIS_MAX_SAFE_TRAVEL_UM' if lab['LAB_TEST_AXIS'] else 'X_AXIS_MAX_SAFE_TRAVEL_UM']
         ppr=values['MOTOR_FULL_STEPS_PER_REV']*values['MOTOR_MICROSTEP'];lead=values['LEAD_UM_PER_REV']
@@ -39,7 +39,12 @@ def configuration(profile, root=ROOT):
     for k,v in lab.items():
         if len(pattern(k).findall(text))!=1:raise ValueError('Missing lab macro: '+k)
         text=pattern(k).sub(lambda m:m[1]+str(v)+m[3],text)
-    return render(source,values),text,dict(scan=values,lab=lab,derived=derived,flashed=False)
+    record=dict(scan=values,lab=lab,derived=derived,flashed=False)
+    if lab['LAB_EXPERIMENT']>=4:
+        from stage_sweep import build_sweep
+        if 'sweep' not in profile:raise ValueError('Use stage-test panel to configure sweep levels')
+        record['_sweep_header'],record['sweep']=build_sweep(profile,values,lab)
+    return render(source,values),text,record
 
 def prepare(profile, output, root=ROOT):
     header,lab,record=configuration(profile,root)
@@ -56,8 +61,12 @@ def prepare(profile, output, root=ROOT):
         if (root/name).exists():shutil.copy2(root/name,out/name)
     (out/'firmware/Core/Inc/snake_scan_config.h').write_bytes(header)
     (out/'firmware/Core/Inc/lab_config.h').write_text(lab,encoding='utf-8')
+    if 'sweep' in record:
+        from stage_sweep import write_plan
+        (out/'firmware/Core/Inc/lab_sweep_config.h').write_text(record.pop('_sweep_header'),encoding='utf-8')
+        write_plan(out/'measurement-plan.csv',record['sweep']['plan'])
     record['title']=profile.get('title','Lab project')
-    record['headers_sha256']={name:sha(out/'firmware/Core/Inc'/name) for name in ('snake_scan_config.h','lab_config.h')}
+    record['headers_sha256']={name:sha(out/'firmware/Core/Inc'/name) for name in ('snake_scan_config.h','lab_config.h','lab_sweep_config.h')}
     write_json(out/'prepared-config.json',record)
     write_json(out/'experiment-profile.json',profile)
     (out/'START.cmd').write_text('@echo off\ncd /d "%~dp0"\npowershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0tools\\launch.ps1" -LabProfile "%~dp0experiment-profile.json"\npause\n',encoding='ascii')

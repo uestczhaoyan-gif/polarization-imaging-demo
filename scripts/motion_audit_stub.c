@@ -102,6 +102,15 @@ int main(void) {
     reset(2); assert(!Scan_MoveRelative(2,1,100,5000)); assert(moves==1);
     puts("PASS: short move without acceptance/motion evidence, lost command, rejection, and stale-only acknowledgement fail closed.");
     reset(0); assert(!Scan_MoveRelative(2,1,0,5000)); assert(moves==0);
+    const uint16_t rpms[]={1,60,3000};
+    for (unsigned i=0;i<3;++i) {
+        reset(0);assert(Scan_MoveCommand(2,1,1,rpms[i],0));
+        assert(moves==1 && last_move[9]==1 && last_move[8]==0 && last_move[7]==0 && last_move[6]==0);
+        assert((((uint16_t)last_move[3]<<8)|last_move[4])==rpms[i]);
+    }
+    reset(0);assert(!Scan_MoveCommand(2,1,1,0,0));assert(moves==0);
+    reset(0);assert(!Scan_MoveCommand(2,1,0xffffffffU,1,0));assert(moves==0);
+    puts("PASS: one-pulse commands at variable RPM, zero RPM and timer overflow guards.");
     puts("Scope: host functions with simulated HAL/replies; no Keil build, DMA timing or motor test.");
     return 0;
 }

@@ -28,6 +28,7 @@
 #include "Emm_V5.h"
 #include "snake_scan_config.h"
 #include "lab_config.h"
+#include "lab_sweep_config.h"
 #include "lab_io.h"
 
 /* USER CODE END Includes */
@@ -282,27 +283,34 @@ static bool Scan_WaitAxisReached(uint8_t addr, uint32_t timeout_ms,
   return false;
 }
 
-static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
-                              uint32_t distance_um, uint32_t timeout_ms)
+static bool Scan_MoveCommand(uint8_t addr, uint8_t direction, uint32_t pulses,
+                             uint16_t rpm, uint32_t timeout_ms)
 {
   bool reply_received;
   uint8_t reply;
-  uint32_t pulses = (uint32_t)DISTANCE_PULSES(distance_um);
+  uint64_t nominal;
+  uint32_t distance_um = (uint32_t)((1ULL * pulses * LEAD_UM_PER_REV) / MOTOR_PULSES_PER_REV);
   uint32_t sent_tick;
-  uint32_t nominal_ms = (uint32_t)MOVE_NOMINAL_MS(distance_um);
+  uint32_t nominal_ms;
 
-  if (pulses == 0U)
+  if ((pulses == 0U) || (rpm == 0U) || (rpm > 3000U))
   {
     return false;
   }
 
+  nominal = (60000ULL * pulses + 1ULL * rpm * MOTOR_PULSES_PER_REV - 1ULL) / (1ULL * rpm * MOTOR_PULSES_PER_REV);
+  if (nominal + 20000ULL > 0xFFFFFFFFULL) { return false; }
+  nominal_ms = (uint32_t)nominal;
+  if (timeout_ms == 0U) { timeout_ms = nominal_ms + 20000U; }
+
   Lab_Service();
   if (Lab_Aborted()) { return false; }
   Lab_Context(++move_id, scan_line, (uint32_t)scan_state, addr, direction, distance_um);
-  Lab_Event("MOVE_BEGIN", SCAN_SPEED_RPM);
+  Lab_Event("COMMAND_PULSES", pulses);
+  Lab_Event("MOVE_BEGIN", rpm);
   sent_tick = HAL_GetTick();
   Scan_ClearRxFrame();
-  Emm_V5_Pos_Control(addr, direction, SCAN_SPEED_RPM, SCAN_ACCELERATION,
+  Emm_V5_Pos_Control(addr, direction, rpm, SCAN_ACCELERATION,
                      pulses, 2U, false);
 
   reply_received = Scan_WaitReply(addr, 0xFDU, &reply,
@@ -326,6 +334,13 @@ static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
   if (Lab_Aborted()) { return false; }
   Lab_Event("MOVE_END",0U);
   return !Lab_Aborted();
+}
+
+static bool Scan_MoveRelative(uint8_t addr, uint8_t direction,
+                              uint32_t distance_um, uint32_t timeout_ms)
+{
+  return Scan_MoveCommand(addr,direction,(uint32_t)DISTANCE_PULSES(distance_um),
+                          SCAN_SPEED_RPM,timeout_ms);
 }
 
 /* Xiaozhi dual-USB board red status LED on PA1 is active-low. */
@@ -473,6 +488,66 @@ static void Lab_AxisTest(void)
   Scan_LedOn();
 }
 
+static void Lab_SweepDwell(void)
+{
+  Scan_LedOn();
+  Lab_Delay(LAB_TEST_DWELL_MS);
+  Scan_LedOff();
+  if (Lab_Aborted()) { Scan_Fail(9U); }
+}
+
+/* Finite stage tests. No PC connection is needed when LAB_LOG_ENABLE=0. */
+static void Lab_SweepTest(void)
+{
+  static const uint32_t pulses[] = LAB_SWEEP_PULSES;
+  static const uint16_t rpms[] = LAB_SWEEP_RPMS;
+  uint32_t stage, repeat, flash;
+  uint8_t axis = LAB_TEST_AXIS ? Y_AXIS_ADDR : X_AXIS_ADDR;
+  uint8_t direction = LAB_TEST_AXIS ? Y_STEP_DIRECTION : X_FIRST_PASS_DIRECTION;
+  for (stage=0U; stage<LAB_SWEEP_COUNT; ++stage)
+  {
+    Lab_Event("SWEEP_STAGE",stage+1U);
+    /* The stage number is visible on the existing red LED and in a video. */
+    for (flash=0U; flash<=stage; ++flash)
+    {
+      Scan_LedOn(); Lab_Delay(250U); Scan_LedOff(); Lab_Delay(250U);
+      if (Lab_Aborted()) { Scan_Fail(9U); }
+    }
+    Lab_Delay(LAB_SWEEP_PAUSE_MS);
+    if (Lab_Aborted()) { Scan_Fail(9U); }
+    scan_line=stage+1U;
+    scan_state=LAB_TEST_AXIS ? SCAN_STATE_MOVING_Y : SCAN_STATE_MOVING_X;
+    if (LAB_EXPERIMENT == 4U)
+    {
+      /* Approach every measured group from the same direction. Measure a new
+       * baseline after this preload; preload does not prove all backlash gone. */
+      if (!Scan_MoveCommand(axis,direction,LAB_SWEEP_PRELOAD_PULSES,rpms[stage],0U)) { Scan_Fail(10U); }
+      Lab_SweepDwell();
+    }
+    for (repeat=0U; repeat<LAB_TEST_REPEATS; ++repeat)
+    {
+      scan_state=LAB_TEST_AXIS ? SCAN_STATE_MOVING_Y : SCAN_STATE_MOVING_X;
+      if (!Scan_MoveCommand(axis,direction,pulses[stage],rpms[stage],0U)) { Scan_Fail(10U); }
+      Lab_SweepDwell();
+      if (LAB_EXPERIMENT != 4U)
+      {
+        scan_state=SCAN_STATE_RETURNING_X;
+        if (!Scan_MoveCommand(axis,(uint8_t)(1U-direction),pulses[stage],rpms[stage],0U)) { Scan_Fail(10U); }
+        Lab_SweepDwell();
+      }
+    }
+    if (LAB_EXPERIMENT == 4U)
+    {
+      scan_state=SCAN_STATE_RETURNING_X;
+      if (!Scan_MoveCommand(axis,(uint8_t)(1U-direction),
+                           LAB_SWEEP_PRELOAD_PULSES+pulses[stage]*LAB_TEST_REPEATS,rpms[stage],0U)) { Scan_Fail(10U); }
+      Lab_SweepDwell();
+    }
+  }
+  scan_state=SCAN_STATE_FINISHED;
+  Scan_LedOn();
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -574,7 +649,8 @@ int main(void)
     Lab_Event("RUN_BEGIN", LAB_EXPERIMENT);
     scan_state = SCAN_STATE_START_DELAY;
     Scan_StartCountdown();
-    if ((LAB_EXPERIMENT >= 2U) && (SCAN_STAGE == 3U)) { Lab_AxisTest(); }
+    if ((LAB_EXPERIMENT >= 4U) && (SCAN_STAGE == 3U)) { Lab_SweepTest(); }
+    else if ((LAB_EXPERIMENT >= 2U) && (SCAN_STAGE == 3U)) { Lab_AxisTest(); }
     else { SnakeScan(); }
     Lab_Event("MOTOR_RX_DROPPED", rxDroppedCount);
     Lab_Event("RUN_END",0U);

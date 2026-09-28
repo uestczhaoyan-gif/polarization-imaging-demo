@@ -10,6 +10,7 @@ jobs:
           python-version: '3.12'
       - run: python scripts/audit_motion.py
       - run: python scripts/audit_labs.py
+      - run: python scripts/audit_sweeps.py
       - run: sudo apt-get update && sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi libnewlib-arm-none-eabi
       - run: python scripts/check_arm.py
   validate:

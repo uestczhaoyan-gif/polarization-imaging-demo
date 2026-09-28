@@ -37,7 +37,7 @@ def main():
     names = ['Emm_V5_Pos_Control', 'Emm_V5_Read_Sys_Params']
     code = code.replace('/* DRIVER */', '\n'.join(function(driver, n) for n in names))
     names = ['Scan_ClearRxFrame', 'Scan_TakeRxFrame', 'Scan_RestartUartRx',
-             'Scan_WaitReply', 'Scan_ReadMotorStatus', 'Scan_WaitAxisReached', 'Scan_MoveRelative']
+             'Scan_WaitReply', 'Scan_ReadMotorStatus', 'Scan_WaitAxisReached', 'Scan_MoveCommand', 'Scan_MoveRelative']
     code = code.replace('/* SCAN */', '\n'.join(function(source, n) for n in names))
     with tempfile.TemporaryDirectory() as temp:
         cfile = Path(temp)/'audit.c'

@@ -25,7 +25,7 @@ STM32 控制双轴平移台做蛇形扫描，源表记录电流，Python 将采�
 
 1. [单向/双向扫描对照](labs/01_scan_modes/README.md)：切换扫描路径，生成独立工程。
 2. [运动事件与相对时间](labs/02_motion_timing/README.md)：STM32→电脑事件日志、人工时间锚点、逐行窗口导出。
-3. [位移与平稳速度测试](labs/03_stage_characterization/README.md)：有限次数往返/阶梯位移，生成并分析实测记录表。
+3. [位移与平稳速度测试](labs/03_stage_characterization/README.md)：最小有效位移、最低/最高平稳速度自动分档，默认离线运行，生成并分析实测表。
 
 每组都有 `settings.json`、可视化入口和独立工程生成器。发布页另附三个独立源码包。日志使用 USART3 PB10/PB11 和外接 **3.3 V USB-TTL**，需要 `pyserial`；不能直接占用正在控制电机的板载 USART1。所有代码均需按说明编译烧录后进行实机验证。
 

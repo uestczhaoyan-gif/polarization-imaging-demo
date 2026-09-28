@@ -119,7 +119,7 @@ class LabTests(unittest.TestCase):
         for p in (ROOT/'labs').glob('*/settings.json'):configuration(json.loads(p.read_text(encoding='utf-8')))
         profile={'lab':{'LAB_EXPERIMENT':3,'LAB_LOG_ENABLE':1,'LAB_TEST_DISTANCE_UM':5}}
         configuration(profile)
-        for changes in ({'LAB_TEST_DISTANCE_UM':1},{'LAB_TEST_DISTANCE_UM':50000},{'LAB_LOG_ENABLE':0},{'LAB_TEST_REPEATS':0}):
+        for changes in ({'LAB_TEST_DISTANCE_UM':1},{'LAB_TEST_DISTANCE_UM':50000},{'LAB_TEST_REPEATS':0}):
             wrong=json.loads(json.dumps(profile));wrong['lab'].update(changes)
             with self.assertRaises(ValueError):configuration(wrong)
 
