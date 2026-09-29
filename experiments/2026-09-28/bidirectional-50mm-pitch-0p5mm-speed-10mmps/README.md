@@ -21,7 +21,21 @@
 - [完整原始波形](results/01_raw_I_point.png)
 - [连续电流重构](results/02_current_reconstruction.png)
 - [交互查看器](results/viewer.html)：下载后直接打开，点击像素或曲线双向定位。
-- [原始数据](raw/current.xls)、[配置](config.json)、[估计行窗口](estimated-row-windows.csv)
+- [原始数据](data/current.xls)、[配置](config.json)、[估计行窗口](estimated-row-windows.csv)
 - [逐像素原始点范围](results/pixel_to_points.csv)、[逐点像素映射](results/sample_to_pixel.csv)
 
 [本次总说明与处理方法](../README.md)
+
+## 本实验的目录与复现
+
+- [data/](data/)：未经改写的原始采集数据。
+- [results/](results/)：发布的图像、交互查看器和逐像素对应表。
+- [code/reconstruct.py](code/reconstruct.py)：只复现本实验的代码入口。
+- [config.json](config.json)：参数；[estimated-row-windows.csv](estimated-row-windows.csv)：估计的分行区间。
+- [现场照片及时间记录](../setup/)：本批次共用资料，原文件对应关系见其中 sources.json。
+
+下载并解压完整仓库，在仓库根目录执行 `python -m pip install -r reconstruction/requirements.txt`，然后执行 `python experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/code/reconstruct.py`。新结果输出到根目录 `local/reconstruction/2026-09-28/` 下的同名实验文件夹，保留发布结果。公共算法在根目录 reconstruction 中；请下载完整仓库，不要只复制入口脚本。
+
+## 位置对应敏感性检查
+
+[相位、像素宽度和正反向行拆分对照](results/registration-check/README.md)。这是探索性诊断，不是位置校准，也不替换上面的原结果。

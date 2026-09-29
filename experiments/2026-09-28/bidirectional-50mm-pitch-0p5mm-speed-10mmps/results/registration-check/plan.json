@@ -1,0 +1,41 @@
+{
+  "input_sha256": "e1a5aa91aa9b7566d5e5f15780dd5e374a14c3d50a92242f1ed71aa28bb347e9",
+  "training_pair_first_rows": [
+    20,
+    24,
+    28,
+    32,
+    36,
+    40,
+    44,
+    48,
+    52,
+    56
+  ],
+  "held_out_pair_first_rows": [
+    22,
+    26,
+    30,
+    34,
+    38,
+    42,
+    46,
+    50,
+    54,
+    58
+  ],
+  "roi_columns": [
+    8,
+    80
+  ],
+  "phase_fraction_bounds": [
+    -0.08,
+    0.08
+  ],
+  "duration_scale_bounds": [
+    0.8,
+    1.2
+  ],
+  "metric": "mean absolute adjacent-row current difference; uA; lower is more consistent, not positional ground truth",
+  "stop": "one bounded two-parameter fit; no row-specific warping"
+}

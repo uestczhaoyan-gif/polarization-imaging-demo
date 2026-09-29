@@ -1,5 +1,7 @@
 # Polarization Imaging Demo
 
+**[Browse by experiment: data / results / reproduction code](experiments/README.md)**
+
 ## View the results first
 
 [Download the complete offline package](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/download/v3.5.0/polarization-imaging-demo-v3.5.0-complete.zip). The images below display directly on GitHub; open **RESULTS.md** for full raw traces and reconstructions.

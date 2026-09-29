@@ -1,5 +1,5 @@
 {
-  "input_file": "raw/current.xls",
+  "input_file": "data/current.xls",
   "input_format": "legacy",
   "point_base": "auto",
   "mode": "index_windows",

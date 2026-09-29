@@ -1,0 +1,166 @@
+{
+  "verified_remote_commit": "48cb1df857e5812ddaae041b4e0d9eab03529486",
+  "note": "All included original files matched remote Git blobs byte-for-byte before the raw-to-data directory rename. Motion-parameter test folder excluded by request.",
+  "files": [
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/50H50W图案.jpg",
+      "sha256": "e3c81d39ec127e616e2cc99d3bd6646374cdceafb490522890e586eaaca2ccd2",
+      "size_bytes": 3255097,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/target-50mm.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/光源.jpg",
+      "sha256": "3cefa049c5d18f0894b2346c603d50310bbb3be31e9be1203960ac3dc3114a91",
+      "size_bytes": 3876896,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/light-source-50mm.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/光源上位机.jpg",
+      "sha256": "f8d026b6787bf4da4cfd879819981780e62f96dea4be81e66a720d7a926256f4",
+      "size_bytes": 4005246,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/aotf-settings-50mm.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/双向扫描成像5050H0.5V1.jpg",
+      "sha256": "a015178aea997b84569e47f2d2563b3f001d50df0a68436df62585aaf51f6e4a",
+      "size_bytes": 288752,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/stopwatch-pitch-0p5-speed-1.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/双向扫描成像5050H0.5V1.xls",
+      "sha256": "949314f734d20011df45af06be56dfbfc7791e8c44119591d768e23e324592c0",
+      "size_bytes": 9009628,
+      "repository_paths": [
+        "experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/data/current.xls"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/双向扫描成像5050H0.5V10.jpg",
+      "sha256": "dfad97f28e0e69777b028cd72d8a5b80a39dca03d8a3828be0c62ade6d6cfa42",
+      "size_bytes": 285950,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/stopwatch-pitch-0p5-speed-10.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/双向扫描成像5050H0.5V10.xls",
+      "sha256": "e1a5aa91aa9b7566d5e5f15780dd5e374a14c3d50a92242f1ed71aa28bb347e9",
+      "size_bytes": 1173294,
+      "repository_paths": [
+        "experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/data/current.xls"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/双向扫描成像5050H1V10.jpg",
+      "sha256": "1709674db60562f5c3017decc9ba81287dc29867d401cfb5d7335699fc0b56af",
+      "size_bytes": 285881,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/stopwatch-pitch-1-speed-10.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/双向扫描成像5050H1V10.xls",
+      "sha256": "957cd90bc43bffb4fd556372d9e463ad4936b777aff5a0c90872df734c48c297",
+      "size_bytes": 604788,
+      "repository_paths": [
+        "experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/data/current.xls"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/源表上位机.jpg",
+      "sha256": "12a0a7db5bb9c43dd3167df972626db62a56e286eaf9e14b3ed5e17d6adf824f",
+      "size_bytes": 1594351,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/sourcemeter-settings-50mm.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/起点定位.jpg",
+      "sha256": "438fb0efa61a19dd3ffd1b94a489f07ce0e4a51acd7b2804b5cb676d0acb0767",
+      "size_bytes": 3077925,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/start-position-50mm.jpg"
+      ]
+    },
+    {
+      "source": "像素大小改变成像5050 双向 H0.5 V10 V1 H1 V10/配置V10-机械振动和晃动更大，且Y轴运动过快，要分离.png",
+      "sha256": "9bb38ce48322938c5e66dfc179c32940853779a7b2a0fe512bba62748216f385",
+      "size_bytes": 180215,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/firmware-settings-speed-10.png"
+      ]
+    },
+    {
+      "source": "单向扫描成像8080 H2 V1/光源上位机配置.jpg",
+      "sha256": "6158746e9a73f34d7ffc3b249d8e8e64976f1a16a24db049cf796cdb9c21ffeb",
+      "size_bytes": 3820916,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/aotf-settings-80mm.jpg"
+      ]
+    },
+    {
+      "source": "单向扫描成像8080 H2 V1/光源配置.jpg",
+      "sha256": "0f00fdabc7ff5c99ea272fdefc64b524952eada028ef7fe280f62d15066b10e6",
+      "size_bytes": 4641226,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/light-source-80mm.jpg"
+      ]
+    },
+    {
+      "source": "单向扫描成像8080 H2 V1/单向扫描成像8080.xls",
+      "sha256": "34cf8c542fe4bdee8880afb62ecd245c8ada597640fe785678d6ef04f9e21a70",
+      "size_bytes": 11527660,
+      "repository_paths": [
+        "experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/data/current.xls"
+      ]
+    },
+    {
+      "source": "单向扫描成像8080 H2 V1/时间记录.jpg",
+      "sha256": "269abbe5e73b77a6aa75ab5e4c0ca72348307c96ba5e7db0e9eb063435bc114d",
+      "size_bytes": 285090,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/stopwatch-unidirectional-80mm.jpg"
+      ]
+    },
+    {
+      "source": "单向扫描成像8080 H2 V1/源表上位机配置.jpg",
+      "sha256": "73064cfa0cf35ce97769966fa7c8c19077442d220c5f235217de72199e77bd3b",
+      "size_bytes": 2355594,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/sourcemeter-settings-80mm.jpg"
+      ]
+    },
+    {
+      "source": "单向扫描成像8080 H2 V1/起点8080.jpg",
+      "sha256": "b4dfcbc136bfbc2b31bbe85f5e4f94d8fa92dc5ec8e5bd6944ef8511dc672b35",
+      "size_bytes": 3126179,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/start-position-80mm.jpg"
+      ]
+    },
+    {
+      "source": "电流梯度成像5050 H2 V5-4行一换 2-4-6-5-3/双向扫描成像5050H2V5.xls",
+      "sha256": "f3e1364cc4dcd4e7cc21646b8b7f87faf06c10428ac659c0c156423ac7122977",
+      "size_bytes": 603928,
+      "repository_paths": [
+        "experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/data/current.xls"
+      ]
+    },
+    {
+      "source": "电流梯度成像5050 H2 V5-4行一换 2-4-6-5-3/双向电流梯度成像5050 H2 V5.jpg",
+      "sha256": "41e719c0cd40f445ec41c7a12270852827dbff79e34e1e215cb8a6495f66451a",
+      "size_bytes": 282133,
+      "repository_paths": [
+        "experiments/2026-09-28/setup/stopwatch-intensity-steps.jpg"
+      ]
+    }
+  ]
+}

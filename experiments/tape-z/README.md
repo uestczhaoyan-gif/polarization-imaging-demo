@@ -27,3 +27,7 @@ python reconstruction/reconstruct.py run --config experiments/tape-z/config.json
 ```
 
 用户报告宽约100 mm、高约70 mm、行距2 mm、速度2 mm/s，等待约10秒后运动。行边界由周期与相邻行一致性估计，不是真实位置日志。阈值固定12 μA；每像素约77或78点。示例不按照片重画，不应将估计坐标作为精密尺寸测量。
+
+## 单实验复现入口
+
+[code/reconstruct.py](code/reconstruct.py) 调用公共算法和本实验配置，结果写到根目录 local/reconstruction 下。请下载完整项目并安装 reconstruction/requirements.txt，再从根目录运行 `python experiments/tape-z/code/reconstruct.py`。原有分析脚本保留原路径。

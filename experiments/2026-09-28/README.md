@@ -49,7 +49,7 @@ python experiments/2026-09-28/rebuild.py
 
 会重新生成五组窗口及结果，运行前保留自己的修改副本。只重做某组且保持窗口不变时，用通用 `reconstruction/reconstruct.py run --config <该组config.json> --overwrite`。
 
-每组 `raw/current.xls` 为原始字节；`config.json` 为参数和锚点；`results/reconstruction.npz`为全量数值及映射；两个CSV分别给出像素→点和点→像素，`row=-1`表示未用于成像。时间戳不存在，所以不伪造I–t横轴。共享现场照片集中在 `setup/`，文件名与原始名称的对应见 `sources.json`。
+每组 `data/current.xls` 为原始字节；`config.json` 为参数和锚点；`results/reconstruction.npz`为全量数值及映射；两个CSV分别给出像素→点和点→像素，`row=-1`表示未用于成像。时间戳不存在，所以不伪造I–t横轴。共享现场照片集中在 `setup/`，文件名与原始名称的对应见 `sources.json`。
 
 ## 运动参数反馈
 

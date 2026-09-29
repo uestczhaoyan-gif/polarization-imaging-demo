@@ -55,3 +55,7 @@ python experiments/tape-frame/prepare_windows.py
 ```
 
 原始文件SHA256：`079a4905b7261c008347127aea21e42735a4a85c0fd46b373dfa4ef5f352c514`。主估计图使用18,280点，其余1,779点保留在原始曲线和对应表中，标记为未用于图像。每个像素包含9–12个原始点。详细测量记录要求见 [measurement.md](../../docs/reconstruction/measurement.md)，复位和加速问题见 [专项排查](../../docs/hardware/reset-and-vendor-checklist.md)。
+
+## 单实验复现入口
+
+[code/reconstruct.py](code/reconstruct.py) 调用公共算法和本实验配置，结果写到根目录 local/reconstruction 下。请下载完整项目并安装 reconstruction/requirements.txt，再从根目录运行 `python experiments/tape-frame/code/reconstruct.py`。原有分析脚本保留原路径。

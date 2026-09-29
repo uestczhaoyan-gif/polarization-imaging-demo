@@ -6,7 +6,7 @@
 
 ## 1. 单向扫描 · 80×80 mm，行距2 mm，1 mm/s
 
-[设置与结果解读](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/README.md) · [原始数据](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/raw/current.xls) · [重构参数](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/config.json) · [像素对应表](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/pixel_to_points.csv)
+[设置与结果解读](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/README.md) · [原始数据](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/data/current.xls) · [重构参数](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/config.json) · [像素对应表](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/pixel_to_points.csv)
 
 **完整原始波形 / Full raw trace**
 
@@ -18,7 +18,7 @@
 
 ## 2. 双向慢速 · 50×50 mm，行距0.5 mm，1 mm/s
 
-[设置与结果解读](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/README.md) · [原始数据](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/raw/current.xls) · [重构参数](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/config.json) · [像素对应表](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/pixel_to_points.csv)
+[设置与结果解读](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/README.md) · [原始数据](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/data/current.xls) · [重构参数](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/config.json) · [像素对应表](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/pixel_to_points.csv)
 
 **完整原始波形 / Full raw trace**
 
@@ -30,7 +30,7 @@
 
 ## 3. 双向快速 · 50×50 mm，行距0.5 mm，10 mm/s
 
-[设置与结果解读](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/README.md) · [原始数据](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/raw/current.xls) · [重构参数](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/config.json) · [像素对应表](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/pixel_to_points.csv)
+[设置与结果解读](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/README.md) · [原始数据](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/data/current.xls) · [重构参数](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/config.json) · [像素对应表](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/pixel_to_points.csv)
 
 **完整原始波形 / Full raw trace**
 
@@ -42,7 +42,7 @@
 
 ## 4. 双向快速 · 50×50 mm，行距1 mm，10 mm/s
 
-[设置与结果解读](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/README.md) · [原始数据](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/raw/current.xls) · [重构参数](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/config.json) · [像素对应表](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/pixel_to_points.csv)
+[设置与结果解读](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/README.md) · [原始数据](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/data/current.xls) · [重构参数](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/config.json) · [像素对应表](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/pixel_to_points.csv)
 
 **完整原始波形 / Full raw trace**
 
@@ -54,7 +54,7 @@
 
 ## 5. 光强梯度 · 50×50 mm，行距2 mm，5 mm/s
 
-[设置与结果解读](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/README.md) · [原始数据](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/raw/current.xls) · [重构参数](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/config.json) · [像素对应表](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/pixel_to_points.csv)
+[设置与结果解读](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/README.md) · [原始数据](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/data/current.xls) · [重构参数](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/config.json) · [像素对应表](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/pixel_to_points.csv)
 
 **完整原始波形 / Full raw trace**
 
