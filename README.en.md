@@ -1,5 +1,21 @@
 # Polarization Imaging Demo
 
+## View the results first
+
+[Download the complete offline package](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/download/v3.5.0/polarization-imaging-demo-v3.5.0-complete.zip). The images below display directly on GitHub; open **RESULTS.md** for full raw traces and reconstructions.
+
+[All results](RESULTS.md) · [Presentation notes](experiments/2026-09-28/slide-notes.md)
+
+| Experiment | Reconstruction preview | Direct links |
+|---|---|---|
+| Unidirectional · 80×80 mm, pitch 2 mm, 1 mm/s | [![Unidirectional · 80×80 mm, pitch 2 mm, 1 mm/s](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/02_current_reconstruction.png) | [Raw trace](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/01_raw_I_point.png) · [Settings and interpretation](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/README.md) |
+| Bidirectional · 50×50 mm, pitch 0.5 mm, 1 mm/s | [![Bidirectional · 50×50 mm, pitch 0.5 mm, 1 mm/s](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/02_current_reconstruction.png) | [Raw trace](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/01_raw_I_point.png) · [Settings and interpretation](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/README.md) |
+| Bidirectional · 50×50 mm, pitch 0.5 mm, 10 mm/s | [![Bidirectional · 50×50 mm, pitch 0.5 mm, 10 mm/s](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/02_current_reconstruction.png) | [Raw trace](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/01_raw_I_point.png) · [Settings and interpretation](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/README.md) |
+| Bidirectional · 50×50 mm, pitch 1 mm, 10 mm/s | [![Bidirectional · 50×50 mm, pitch 1 mm, 10 mm/s](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/02_current_reconstruction.png) | [Raw trace](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/01_raw_I_point.png) · [Settings and interpretation](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/README.md) |
+| Intensity steps · 50×50 mm, pitch 2 mm, 5 mm/s | [![Intensity steps · 50×50 mm, pitch 2 mm, 5 mm/s](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/02_current_reconstruction.png) | [Raw trace](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/01_raw_I_point.png) · [Settings and interpretation](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/README.md) |
+
+Interactive viewers: download and extract the package, then open `experiments/2026-09-28/index.html`. GitHub displays HTML source rather than running it. Row windows are estimated, not position-synchronized measurements.
+
 Choose bidirectional serpentine or unidirectional scanning in START.cmd. Unidirectional mode scans, returns at the same speed, then steps Y after every row, including the last. Exclude returns from reconstruction using explicit row windows; optional USART3 event logging is available; acquisition remains independent and post-processing is not hardware synchronization. [Mode guide](docs/hardware/scan-modes.md)
 
 [中文](README.md) | **English**

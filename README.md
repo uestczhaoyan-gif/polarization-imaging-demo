@@ -1,5 +1,21 @@
 # 偏振成像演示
 
+## 先看实验结果
+
+**不用下载、不用运行代码：下面直接看重构图，点“原始波形”看完整采集数据。**
+
+[全部结果：原始波形＋重构大图](RESULTS.md) · [每组一页PPT文字](experiments/2026-09-28/slide-notes.md) · [下载完整离线包](https://github.com/uestczhaoyan-gif/polarization-imaging-demo/releases/download/v3.5.0/polarization-imaging-demo-v3.5.0-complete.zip)
+
+| 实验 | 重构预览（点击放大） | 直接打开 |
+|---|---|---|
+| 单向扫描 · 80×80 mm，行距2 mm，1 mm/s | [![单向扫描 · 80×80 mm，行距2 mm，1 mm/s](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/02_current_reconstruction.png) | [原始波形](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/results/01_raw_I_point.png) · [设置与解读](experiments/2026-09-28/unidirectional-80mm-pitch-2mm-speed-1mmps/README.md) |
+| 双向慢速 · 50×50 mm，行距0.5 mm，1 mm/s | [![双向慢速 · 50×50 mm，行距0.5 mm，1 mm/s](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/02_current_reconstruction.png) | [原始波形](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/01_raw_I_point.png) · [设置与解读](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/README.md) |
+| 双向快速 · 50×50 mm，行距0.5 mm，10 mm/s | [![双向快速 · 50×50 mm，行距0.5 mm，10 mm/s](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/02_current_reconstruction.png) | [原始波形](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/results/01_raw_I_point.png) · [设置与解读](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-10mmps/README.md) |
+| 双向快速 · 50×50 mm，行距1 mm，10 mm/s | [![双向快速 · 50×50 mm，行距1 mm，10 mm/s](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/02_current_reconstruction.png) | [原始波形](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/results/01_raw_I_point.png) · [设置与解读](experiments/2026-09-28/bidirectional-50mm-pitch-1mm-speed-10mmps/README.md) |
+| 光强梯度 · 50×50 mm，行距2 mm，5 mm/s | [![光强梯度 · 50×50 mm，行距2 mm，5 mm/s](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/02_current_reconstruction.png)](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/02_current_reconstruction.png) | [原始波形](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/results/01_raw_I_point.png) · [设置与解读](experiments/2026-09-28/intensity-steps-50mm-pitch-2mm-speed-5mmps/README.md) |
+
+**交互图怎么开：**下载完整包并解压，双击 `experiments/2026-09-28/index.html`。GitHub网页里的 `.html` 显示源码，不能直接交互。以上为连续电流图，行窗口仍是估计值。
+
 支持双向蛇形与单向扫描，可在START.cmd工作台切换。单向每行横扫后返回，再Y换行（最后一行也一样）；返回段不用于成像。可选 USART3 运动日志；源表仍独立采集，后处理对齐不等于硬件同步。[模式、时间与重构说明](docs/hardware/scan-modes.md)
 
 **中文** | [English](README.en.md)
