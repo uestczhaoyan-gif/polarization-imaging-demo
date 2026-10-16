@@ -24,3 +24,6 @@ experiments/*/results/**/sample_to_pixel.csv -diff
 
 # Freeze source bytes and result manifests for the nested September session.
 experiments/2026-09-28/** -text whitespace=cr-at-eol
+
+# Preserve October source bytes and reproducible result hashes.
+experiments/2026-10-16/** -text whitespace=cr-at-eol
