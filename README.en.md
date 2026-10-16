@@ -1,5 +1,13 @@
 # Polarization Imaging Demo
 
+## Latest: October 16 acquisition and registration experiments
+
+[Seven experiments: raw data, results and reproducible code](experiments/2026-10-16/README.md) · [Presentation notes (Chinese)](experiments/2026-10-16/slide-notes.md)
+
+![Registration results](experiments/2026-10-16/comparisons/05_registration_common_grid.png)
+
+Each case contains `data/`, `results/`, `code/` and configuration. Cross-case analyses are in `comparisons/`. Download the repository and open `experiments/2026-10-16/index.html` for interactive inspection. The historical v3.5.0 archive below does not include October 16; use the current repository for these data. Coordinates remain estimated, and these illumination tests do not constitute a Stokes measurement.
+
 **[Browse by experiment: data / results / reproduction code](experiments/README.md)**
 
 ## View the results first

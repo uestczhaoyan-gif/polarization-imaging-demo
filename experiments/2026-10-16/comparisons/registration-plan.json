@@ -1,0 +1,23 @@
+{
+  "reference": "light20",
+  "parameters": "source_x=27.5+scale*(reference_x-27.5)+dx; source_y=reference_y+dy",
+  "bounds": {
+    "dx_mm": [
+      -2,
+      2
+    ],
+    "dy_mm": [
+      -2,
+      2
+    ],
+    "scale": [
+      0.95,
+      1.05
+    ]
+  },
+  "fit_mask": "x<8 or 30<x<37, y<18; even row indices",
+  "held_out_marker": "same ROI, odd row indices",
+  "held_out_target": "9<x<29, 1<y<18",
+  "model": "one global X scale + X/Y translation, no rotation or per-row warping",
+  "seed": 1016
+}

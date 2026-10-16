@@ -1,0 +1,18 @@
+[
+  {
+    "light_percent": 40,
+    "before_mean_abs_mm": 0.4591772506569191,
+    "after_mean_abs_mm": 0.14806049436521182,
+    "before_rows": 7,
+    "after_rows": 7,
+    "note": "Same seven source rows before/after; nominal scale; aligned Y interpolated only within measured reference rows; not absolute accuracy."
+  },
+  {
+    "light_percent": 60,
+    "before_mean_abs_mm": 0.41853292496864725,
+    "after_mean_abs_mm": 0.15703997331729752,
+    "before_rows": 7,
+    "after_rows": 7,
+    "note": "Same seven source rows before/after; nominal scale; aligned Y interpolated only within measured reference rows; not absolute accuracy."
+  }
+]

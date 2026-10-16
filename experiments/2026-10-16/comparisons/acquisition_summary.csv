@@ -1,0 +1,5 @@
+﻿case,raw_points,forward_points,return_wait_tail_points,last_forward_stop,columns,points_per_pixel_min,points_per_pixel_max,integration_ms,integration_travel_mm,estimated_cycle_sample_rate_hz
+A-v10-nplc0p1,8941,3549,5392,7613,42,16,18,2.0,0.02,82.89719495918023
+B-v10-nplc0p01,21357,8352,13005,18257,42,39,41,0.2,0.002,196.69602805677863
+C-v10-nplc1,1290,512,778,1115,42,2,3,20,0.2,12.039999645957133
+D-v1-nplc0p1,69032,33483,35549,61699,42,158,161,2.0,0.002,78.79677193665248

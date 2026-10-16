@@ -1,0 +1,72 @@
+[
+  {
+    "original_name": "多次测量对准20%/20%N0.1.xls",
+    "archived_path": "registration/light20/data/current.xls",
+    "sha256": "8481e4c85c55bba1d6c5b8c3fce7cd9d693eeac851f4754991c18d064a8aef63"
+  },
+  {
+    "original_name": "多次测量对准20%/Screenshot_20261016_152432_com_hihonor_deskclock.jpg",
+    "archived_path": "registration/light20/data/stopwatch.jpg",
+    "sha256": "beb4f4b53b9cd681ecf03b130a6151b23a062f2954095b25bbb5b6da8507fd65"
+  },
+  {
+    "original_name": "多次测量对准40%/40%.xls",
+    "archived_path": "registration/light40/data/current.xls",
+    "sha256": "75e8daab1037dbf1505e11ab98a6ccf77f7a9ee5ab980eb8b7acc7ef2d579b8f"
+  },
+  {
+    "original_name": "多次测量对准40%/Screenshot_20261016_160942_com_hihonor_deskclock.jpg",
+    "archived_path": "registration/light40/data/stopwatch.jpg",
+    "sha256": "b959a58366d388316f993563897e13eb42e3f57a6a936b7b4afcfd8e102aa41b"
+  },
+  {
+    "original_name": "多次测量对准60%/60%.xls",
+    "archived_path": "registration/light60/data/current.xls",
+    "sha256": "88360ba7947345ec1069937e0e62311c85c1e459384bdabf624d9ab4e8a11466"
+  },
+  {
+    "original_name": "多次测量对准60%/Screenshot_20261016_165341_com_hihonor_deskclock.jpg",
+    "archived_path": "registration/light60/data/stopwatch.jpg",
+    "sha256": "39e20c14e06bca6dd3b642b0704b51bd72fb616511a2dd288c42ab8b3326a7e4"
+  },
+  {
+    "original_name": "源表采集功能V10N0.01/Screenshot_20261016_140345_com_hihonor_deskclock.jpg",
+    "archived_path": "acquisition/B-v10-nplc0p01/data/stopwatch.jpg",
+    "sha256": "c784e90bb425ef7a5b9b66f33a13b77f515d07a37bd99715aec7cd26909993c7"
+  },
+  {
+    "original_name": "源表采集功能V10N0.01/V10N0.01.xls",
+    "archived_path": "acquisition/B-v10-nplc0p01/data/current.xls",
+    "sha256": "067edb2b1007e81088a42867d9d53be5952e13299aae58061c4f0cecfc6e21a8"
+  },
+  {
+    "original_name": "源表采集功能V10N0.1/Screenshot_20261016_134919_com_hihonor_deskclock.jpg",
+    "archived_path": "acquisition/A-v10-nplc0p1/data/stopwatch.jpg",
+    "sha256": "0c1c4dec101803b4301d679692c2b28bebb48599e5faf98d3062acb6188a5dd3"
+  },
+  {
+    "original_name": "源表采集功能V10N0.1/V10N0.1.xls",
+    "archived_path": "acquisition/A-v10-nplc0p1/data/current.xls",
+    "sha256": "6b9e0f68957de666b376bcd790847a7b6a8806830ffc01acd5b5421786e9916b"
+  },
+  {
+    "original_name": "源表采集功能V10N1/Screenshot_20261016_135715_com_hihonor_deskclock.jpg",
+    "archived_path": "acquisition/C-v10-nplc1/data/stopwatch.jpg",
+    "sha256": "d7a09bf1ad2b10f83af19d07f4ec02b16a256f8cbf7396e64f0831932cd2e5e6"
+  },
+  {
+    "original_name": "源表采集功能V10N1/V10N1.xls",
+    "archived_path": "acquisition/C-v10-nplc1/data/current.xls",
+    "sha256": "001e31ea20abdd1262111ef5f3b0ff2c3dd07890b93c152f6b12e89a01b39f45"
+  },
+  {
+    "original_name": "源表采集功能V1N0.1/Screenshot_20261016_142056_com_hihonor_deskclock.jpg",
+    "archived_path": "acquisition/D-v1-nplc0p1/data/stopwatch.jpg",
+    "sha256": "045300e521a90d51dec0ce835b2dedac92dbb5b6f18bb7cd10eed3dabcc5eb69"
+  },
+  {
+    "original_name": "源表采集功能V1N0.1/V1N0.1.xls",
+    "archived_path": "acquisition/D-v1-nplc0p1/data/current.xls",
+    "sha256": "943ba4902deaac314ebf8c2de73a3ff9d24e69d367b61016081c612a8a9473bc"
+  }
+]

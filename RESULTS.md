@@ -1,5 +1,17 @@
 # 实验结果总览 / Experiment results
 
+## 最新1016：源表对照与多次对准
+
+[完整分析与七组数据入口](experiments/2026-10-16/README.md) · [四个问题怎么汇报](experiments/2026-10-16/slide-notes.md)
+
+![源表四组完整波形与重构](experiments/2026-10-16/comparisons/01_acquisition_overview.png)
+
+![三次测量完整波形与重构](experiments/2026-10-16/comparisons/04_registration_original.png)
+
+![三次测量对准前后](experiments/2026-10-16/comparisons/05_registration_common_grid.png)
+
+以下为0928历史实验。
+
 这里直接展示完整原始波形与连续电流重构，不需要安装软件。每组的设置、结果解读和数据放在同一入口。重构图使用电流中位数连续色标，无阈值化；行窗口由电流结构估计，未完成位置同步标定。
 
 [返回项目首页](README.md) · [PPT汇报文字](experiments/2026-09-28/slide-notes.md)

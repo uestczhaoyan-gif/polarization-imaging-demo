@@ -1,0 +1,9 @@
+{
+  "raw_files_byte_verified": 14,
+  "all_seven_pixel_medians_verified": true,
+  "all_fusion_source_medians_and_weights_verified": true,
+  "common_valid_pixels": 1007,
+  "total_grid_pixels": 1100,
+  "stable_bright_pixels": 368,
+  "scope": "Numerical consistency only; not measured positional accuracy."
+}

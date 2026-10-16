@@ -1,0 +1,43 @@
+{
+  "input_file": "data/current.xls",
+  "input_format": "legacy",
+  "point_base": 8,
+  "mode": "index_windows",
+  "continuous_only": true,
+  "width_mm": 85,
+  "line_step_mm": 1,
+  "columns": 42,
+  "row_windows_csv": "estimated-row-windows.csv",
+  "title": "acquisition/B-v10-nplc0p01",
+  "short_title": "acquisition/B-v10-nplc0p01",
+  "rows": 5,
+  "x_speed_mm_s": 10,
+  "nplc": 0.01,
+  "reported_start_wait_seconds": 14.62,
+  "reported_motion_seconds": 111.02,
+  "model_cycle_seconds": 18.0,
+  "turnaround_anchor_source_indices": [
+    4093.024966840295,
+    7595.494792757445,
+    11183.134470593128,
+    14716.654895477262,
+    18257.183400499278
+  ],
+  "estimated_sample_rate_per_row": [
+    194.58165699539722,
+    196.94748621535646,
+    197.81000285332826,
+    196.50135916405972,
+    196.69602805677863
+  ],
+  "color_limits_uA": [
+    0,
+    320
+  ],
+  "interpretation_notes": [
+    "所有横扫窗口由信号重复结构及计时模型估计，无实测时间戳或位置记录。",
+    "仅保留单向正扫；回程、等待和尾段保留在原始波形中。",
+    "坐标为名义坐标；尚无Marker的实测尺寸标定。",
+    "用户报告Y随X速度变化但未实测：源表组采用Y=X的名义运动时间及0.9秒换轴停顿；绝对mm尺度仅近似，比较另用Marker归一化坐标。"
+  ]
+}

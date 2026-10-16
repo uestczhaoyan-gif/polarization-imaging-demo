@@ -1,5 +1,13 @@
 # 偏振成像演示
 
+## 最新：1016 源表对照与三次测量对准
+
+[七组实验：原始数据、处理结果与代码](experiments/2026-10-16/README.md) · [四个问题的PPT汇报说明](experiments/2026-10-16/slide-notes.md)
+
+![三次测量对准结果](experiments/2026-10-16/comparisons/05_registration_common_grid.png)
+
+每个实验都有 `data/`、`results/`、`code/` 和参数；跨实验比较放在 `comparisons/`。交互查看器下载后打开 `experiments/2026-10-16/index.html`。下面的 v3.5.0 离线包为历史版本，不含1016数据；1016完整内容已随当前仓库提供。
+
 **[按实验找文件：数据 / 结果 / 复现代码](experiments/README.md)**
 
 ## 先看实验结果
