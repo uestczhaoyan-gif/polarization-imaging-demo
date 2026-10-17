@@ -1,5 +1,7 @@
 # 2026-10-16：源表采集对照与三次测量对准
 
+> **1017修正：**首行不用于方向性伪影判断；原先以首行宽缓变化为主的论述不能排除后续边缘伪影。请优先阅读[后四行边缘复核](edge-review.md)。
+
 [四个问题的PPT汇报说明](slide-notes.md) · [打开离线图集](index.html) · [共同像素与原始数据交互查看器](comparisons/fusion-viewer.html) · [七组原始文件校验记录](source-manifest.json)
 
 ## 结论先读
