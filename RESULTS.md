@@ -1,5 +1,7 @@
 # 实验结果总览 / Experiment results
 
+[新增：1 mm/s正反向拆分与10 mm/s对照](experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/results/direction-check/README.md)
+
 ## 最新1016：源表对照与多次对准
 
 [完整分析与七组数据入口](experiments/2026-10-16/README.md) · [四个问题怎么汇报](experiments/2026-10-16/slide-notes.md)

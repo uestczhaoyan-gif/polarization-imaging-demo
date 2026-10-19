@@ -35,3 +35,7 @@
 - [现场照片及时间记录](../setup/)：本批次共用资料，原文件对应关系见其中 sources.json。
 
 下载并解压完整仓库，在仓库根目录执行 `python -m pip install -r reconstruction/requirements.txt`，然后执行 `python experiments/2026-09-28/bidirectional-50mm-pitch-0p5mm-speed-1mmps/code/reconstruct.py`。新结果输出到根目录 `local/reconstruction/2026-09-28/` 下的同名实验文件夹，保留发布结果。公共算法在根目录 reconstruction 中；请下载完整仓库，不要只复制入口脚本。
+
+## 正反向拆分与慢快对照
+
+[全部行、仅正向行、仅反向行及1/10 mm/s六图对照](results/direction-check/README.md)。直接拆分原重构，保留原始像素值和Y位置。
